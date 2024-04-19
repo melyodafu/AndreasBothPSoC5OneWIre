@@ -1,0 +1,2118 @@
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"isr_averageData.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.isr_averageData_Start,"ax",%progbits
+  20              		.align	2
+  21              		.global	isr_averageData_Start
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	isr_averageData_Start, %function
+  25              	isr_averageData_Start:
+  26              	.LFB63:
+  27              		.file 1 "Generated_Source\\PSoC5\\isr_averageData.c"
+   1:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+   2:Generated_Source\PSoC5/isr_averageData.c **** * File Name: isr_averageData.c  
+   3:Generated_Source\PSoC5/isr_averageData.c **** * Version 1.70
+   4:Generated_Source\PSoC5/isr_averageData.c **** *
+   5:Generated_Source\PSoC5/isr_averageData.c **** *  Description:
+   6:Generated_Source\PSoC5/isr_averageData.c **** *   API for controlling the state of an interrupt.
+   7:Generated_Source\PSoC5/isr_averageData.c **** *
+   8:Generated_Source\PSoC5/isr_averageData.c **** *
+   9:Generated_Source\PSoC5/isr_averageData.c **** *  Note:
+  10:Generated_Source\PSoC5/isr_averageData.c **** *
+  11:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+  12:Generated_Source\PSoC5/isr_averageData.c **** * Copyright 2008-2015, Cypress Semiconductor Corporation.  All rights reserved.
+  13:Generated_Source\PSoC5/isr_averageData.c **** * You may use this file only in accordance with the license, terms, conditions, 
+  14:Generated_Source\PSoC5/isr_averageData.c **** * disclaimers, and limitations in the end user license agreement accompanying 
+  15:Generated_Source\PSoC5/isr_averageData.c **** * the software package with which this file was provided.
+  16:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+  17:Generated_Source\PSoC5/isr_averageData.c **** 
+  18:Generated_Source\PSoC5/isr_averageData.c **** 
+  19:Generated_Source\PSoC5/isr_averageData.c **** #include <cydevice_trm.h>
+  20:Generated_Source\PSoC5/isr_averageData.c **** #include <CyLib.h>
+  21:Generated_Source\PSoC5/isr_averageData.c **** #include <isr_averageData.h>
+  22:Generated_Source\PSoC5/isr_averageData.c **** #include "cyapicallbacks.h"
+  23:Generated_Source\PSoC5/isr_averageData.c **** 
+  24:Generated_Source\PSoC5/isr_averageData.c **** #if !defined(isr_averageData__REMOVED) /* Check for removal by optimization */
+  25:Generated_Source\PSoC5/isr_averageData.c **** 
+  26:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+  27:Generated_Source\PSoC5/isr_averageData.c **** *  Place your includes, defines and code here 
+  28:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************/
+  29:Generated_Source\PSoC5/isr_averageData.c **** /* `#START isr_averageData_intc` */
+  30:Generated_Source\PSoC5/isr_averageData.c ****     #include "project.h"
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 2
+
+
+  31:Generated_Source\PSoC5/isr_averageData.c ****     
+  32:Generated_Source\PSoC5/isr_averageData.c ****     #define TRUE  1
+  33:Generated_Source\PSoC5/isr_averageData.c ****     #define FALSE 0
+  34:Generated_Source\PSoC5/isr_averageData.c ****     #define SAMPLE_RATE 10000
+  35:Generated_Source\PSoC5/isr_averageData.c ****     
+  36:Generated_Source\PSoC5/isr_averageData.c ****     extern volatile uint64 gInputSum;
+  37:Generated_Source\PSoC5/isr_averageData.c ****     extern volatile uint32 gAverageData;
+  38:Generated_Source\PSoC5/isr_averageData.c ****     extern volatile uint8 gSendAverage;
+  39:Generated_Source\PSoC5/isr_averageData.c **** /* `#END` */
+  40:Generated_Source\PSoC5/isr_averageData.c **** 
+  41:Generated_Source\PSoC5/isr_averageData.c **** #ifndef CYINT_IRQ_BASE
+  42:Generated_Source\PSoC5/isr_averageData.c **** #define CYINT_IRQ_BASE      16
+  43:Generated_Source\PSoC5/isr_averageData.c **** #endif /* CYINT_IRQ_BASE */
+  44:Generated_Source\PSoC5/isr_averageData.c **** #ifndef CYINT_VECT_TABLE
+  45:Generated_Source\PSoC5/isr_averageData.c **** #define CYINT_VECT_TABLE    ((cyisraddress **) CYREG_NVIC_VECT_OFFSET)
+  46:Generated_Source\PSoC5/isr_averageData.c **** #endif /* CYINT_VECT_TABLE */
+  47:Generated_Source\PSoC5/isr_averageData.c **** 
+  48:Generated_Source\PSoC5/isr_averageData.c **** /* Declared in startup, used to set unused interrupts to. */
+  49:Generated_Source\PSoC5/isr_averageData.c **** CY_ISR_PROTO(IntDefaultHandler);
+  50:Generated_Source\PSoC5/isr_averageData.c **** 
+  51:Generated_Source\PSoC5/isr_averageData.c **** 
+  52:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+  53:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_Start
+  54:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+  55:Generated_Source\PSoC5/isr_averageData.c **** *
+  56:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+  57:Generated_Source\PSoC5/isr_averageData.c **** *  Set up the interrupt and enable it. This function disables the interrupt, 
+  58:Generated_Source\PSoC5/isr_averageData.c **** *  sets the default interrupt vector, sets the priority from the value in the
+  59:Generated_Source\PSoC5/isr_averageData.c **** *  Design Wide Resources Interrupt Editor, then enables the interrupt to the 
+  60:Generated_Source\PSoC5/isr_averageData.c **** *  interrupt controller.
+  61:Generated_Source\PSoC5/isr_averageData.c **** *
+  62:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:  
+  63:Generated_Source\PSoC5/isr_averageData.c **** *   None
+  64:Generated_Source\PSoC5/isr_averageData.c **** *
+  65:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+  66:Generated_Source\PSoC5/isr_averageData.c **** *   None
+  67:Generated_Source\PSoC5/isr_averageData.c **** *
+  68:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+  69:Generated_Source\PSoC5/isr_averageData.c **** void isr_averageData_Start(void)
+  70:Generated_Source\PSoC5/isr_averageData.c **** {
+  28              		.loc 1 70 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 0
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32 0000 80B5     		push	{r7, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 00AF     		add	r7, sp, #0
+  37              		.cfi_def_cfa_register 7
+  71:Generated_Source\PSoC5/isr_averageData.c ****     /* For all we know the interrupt is active. */
+  72:Generated_Source\PSoC5/isr_averageData.c ****     isr_averageData_Disable();
+  38              		.loc 1 72 0
+  39 0004 FFF7FEFF 		bl	isr_averageData_Disable
+  73:Generated_Source\PSoC5/isr_averageData.c **** 
+  74:Generated_Source\PSoC5/isr_averageData.c ****     /* Set the ISR to point to the isr_averageData Interrupt. */
+  75:Generated_Source\PSoC5/isr_averageData.c ****     isr_averageData_SetVector(&isr_averageData_Interrupt);
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 3
+
+
+  40              		.loc 1 75 0
+  41 0008 0448     		ldr	r0, .L2
+  42 000a FFF7FEFF 		bl	isr_averageData_SetVector
+  76:Generated_Source\PSoC5/isr_averageData.c **** 
+  77:Generated_Source\PSoC5/isr_averageData.c ****     /* Set the priority. */
+  78:Generated_Source\PSoC5/isr_averageData.c ****     isr_averageData_SetPriority((uint8)isr_averageData_INTC_PRIOR_NUMBER);
+  43              		.loc 1 78 0
+  44 000e 0720     		movs	r0, #7
+  45 0010 FFF7FEFF 		bl	isr_averageData_SetPriority
+  79:Generated_Source\PSoC5/isr_averageData.c **** 
+  80:Generated_Source\PSoC5/isr_averageData.c ****     /* Enable it. */
+  81:Generated_Source\PSoC5/isr_averageData.c ****     isr_averageData_Enable();
+  46              		.loc 1 81 0
+  47 0014 FFF7FEFF 		bl	isr_averageData_Enable
+  82:Generated_Source\PSoC5/isr_averageData.c **** }
+  48              		.loc 1 82 0
+  49 0018 00BF     		nop
+  50 001a 80BD     		pop	{r7, pc}
+  51              	.L3:
+  52              		.align	2
+  53              	.L2:
+  54 001c 00000000 		.word	isr_averageData_Interrupt
+  55              		.cfi_endproc
+  56              	.LFE63:
+  57              		.size	isr_averageData_Start, .-isr_averageData_Start
+  58              		.section	.text.isr_averageData_StartEx,"ax",%progbits
+  59              		.align	2
+  60              		.global	isr_averageData_StartEx
+  61              		.thumb
+  62              		.thumb_func
+  63              		.type	isr_averageData_StartEx, %function
+  64              	isr_averageData_StartEx:
+  65              	.LFB64:
+  83:Generated_Source\PSoC5/isr_averageData.c **** 
+  84:Generated_Source\PSoC5/isr_averageData.c **** 
+  85:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+  86:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_StartEx
+  87:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+  88:Generated_Source\PSoC5/isr_averageData.c **** *
+  89:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+  90:Generated_Source\PSoC5/isr_averageData.c **** *  Sets up the interrupt and enables it. This function disables the interrupt,
+  91:Generated_Source\PSoC5/isr_averageData.c **** *  sets the interrupt vector based on the address passed in, sets the priority 
+  92:Generated_Source\PSoC5/isr_averageData.c **** *  from the value in the Design Wide Resources Interrupt Editor, then enables 
+  93:Generated_Source\PSoC5/isr_averageData.c **** *  the interrupt to the interrupt controller.
+  94:Generated_Source\PSoC5/isr_averageData.c **** *  
+  95:Generated_Source\PSoC5/isr_averageData.c **** *  When defining ISR functions, the CY_ISR and CY_ISR_PROTO macros should be 
+  96:Generated_Source\PSoC5/isr_averageData.c **** *  used to provide consistent definition across compilers:
+  97:Generated_Source\PSoC5/isr_averageData.c **** *  
+  98:Generated_Source\PSoC5/isr_averageData.c **** *  Function definition example:
+  99:Generated_Source\PSoC5/isr_averageData.c **** *   CY_ISR(MyISR)
+ 100:Generated_Source\PSoC5/isr_averageData.c **** *   {
+ 101:Generated_Source\PSoC5/isr_averageData.c **** *   }
+ 102:Generated_Source\PSoC5/isr_averageData.c **** *   Function prototype example:
+ 103:Generated_Source\PSoC5/isr_averageData.c **** *   CY_ISR_PROTO(MyISR);
+ 104:Generated_Source\PSoC5/isr_averageData.c **** *
+ 105:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:  
+ 106:Generated_Source\PSoC5/isr_averageData.c **** *   address: Address of the ISR to set in the interrupt vector table.
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 4
+
+
+ 107:Generated_Source\PSoC5/isr_averageData.c **** *
+ 108:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 109:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 110:Generated_Source\PSoC5/isr_averageData.c **** *
+ 111:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 112:Generated_Source\PSoC5/isr_averageData.c **** void isr_averageData_StartEx(cyisraddress address)
+ 113:Generated_Source\PSoC5/isr_averageData.c **** {
+  66              		.loc 1 113 0
+  67              		.cfi_startproc
+  68              		@ args = 0, pretend = 0, frame = 8
+  69              		@ frame_needed = 1, uses_anonymous_args = 0
+  70 0000 80B5     		push	{r7, lr}
+  71              		.cfi_def_cfa_offset 8
+  72              		.cfi_offset 7, -8
+  73              		.cfi_offset 14, -4
+  74 0002 82B0     		sub	sp, sp, #8
+  75              		.cfi_def_cfa_offset 16
+  76 0004 00AF     		add	r7, sp, #0
+  77              		.cfi_def_cfa_register 7
+  78 0006 7860     		str	r0, [r7, #4]
+ 114:Generated_Source\PSoC5/isr_averageData.c ****     /* For all we know the interrupt is active. */
+ 115:Generated_Source\PSoC5/isr_averageData.c ****     isr_averageData_Disable();
+  79              		.loc 1 115 0
+  80 0008 FFF7FEFF 		bl	isr_averageData_Disable
+ 116:Generated_Source\PSoC5/isr_averageData.c **** 
+ 117:Generated_Source\PSoC5/isr_averageData.c ****     /* Set the ISR to point to the isr_averageData Interrupt. */
+ 118:Generated_Source\PSoC5/isr_averageData.c ****     isr_averageData_SetVector(address);
+  81              		.loc 1 118 0
+  82 000c 7868     		ldr	r0, [r7, #4]
+  83 000e FFF7FEFF 		bl	isr_averageData_SetVector
+ 119:Generated_Source\PSoC5/isr_averageData.c **** 
+ 120:Generated_Source\PSoC5/isr_averageData.c ****     /* Set the priority. */
+ 121:Generated_Source\PSoC5/isr_averageData.c ****     isr_averageData_SetPriority((uint8)isr_averageData_INTC_PRIOR_NUMBER);
+  84              		.loc 1 121 0
+  85 0012 0720     		movs	r0, #7
+  86 0014 FFF7FEFF 		bl	isr_averageData_SetPriority
+ 122:Generated_Source\PSoC5/isr_averageData.c **** 
+ 123:Generated_Source\PSoC5/isr_averageData.c ****     /* Enable it. */
+ 124:Generated_Source\PSoC5/isr_averageData.c ****     isr_averageData_Enable();
+  87              		.loc 1 124 0
+  88 0018 FFF7FEFF 		bl	isr_averageData_Enable
+ 125:Generated_Source\PSoC5/isr_averageData.c **** }
+  89              		.loc 1 125 0
+  90 001c 00BF     		nop
+  91 001e 0837     		adds	r7, r7, #8
+  92              		.cfi_def_cfa_offset 8
+  93 0020 BD46     		mov	sp, r7
+  94              		.cfi_def_cfa_register 13
+  95              		@ sp needed
+  96 0022 80BD     		pop	{r7, pc}
+  97              		.cfi_endproc
+  98              	.LFE64:
+  99              		.size	isr_averageData_StartEx, .-isr_averageData_StartEx
+ 100              		.section	.text.isr_averageData_Stop,"ax",%progbits
+ 101              		.align	2
+ 102              		.global	isr_averageData_Stop
+ 103              		.thumb
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 5
+
+
+ 104              		.thumb_func
+ 105              		.type	isr_averageData_Stop, %function
+ 106              	isr_averageData_Stop:
+ 107              	.LFB65:
+ 126:Generated_Source\PSoC5/isr_averageData.c **** 
+ 127:Generated_Source\PSoC5/isr_averageData.c **** 
+ 128:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 129:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_Stop
+ 130:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 131:Generated_Source\PSoC5/isr_averageData.c **** *
+ 132:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 133:Generated_Source\PSoC5/isr_averageData.c **** *   Disables and removes the interrupt.
+ 134:Generated_Source\PSoC5/isr_averageData.c **** *
+ 135:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:  
+ 136:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 137:Generated_Source\PSoC5/isr_averageData.c **** *
+ 138:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 139:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 140:Generated_Source\PSoC5/isr_averageData.c **** *
+ 141:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 142:Generated_Source\PSoC5/isr_averageData.c **** void isr_averageData_Stop(void)
+ 143:Generated_Source\PSoC5/isr_averageData.c **** {
+ 108              		.loc 1 143 0
+ 109              		.cfi_startproc
+ 110              		@ args = 0, pretend = 0, frame = 0
+ 111              		@ frame_needed = 1, uses_anonymous_args = 0
+ 112 0000 80B5     		push	{r7, lr}
+ 113              		.cfi_def_cfa_offset 8
+ 114              		.cfi_offset 7, -8
+ 115              		.cfi_offset 14, -4
+ 116 0002 00AF     		add	r7, sp, #0
+ 117              		.cfi_def_cfa_register 7
+ 144:Generated_Source\PSoC5/isr_averageData.c ****     /* Disable this interrupt. */
+ 145:Generated_Source\PSoC5/isr_averageData.c ****     isr_averageData_Disable();
+ 118              		.loc 1 145 0
+ 119 0004 FFF7FEFF 		bl	isr_averageData_Disable
+ 146:Generated_Source\PSoC5/isr_averageData.c **** 
+ 147:Generated_Source\PSoC5/isr_averageData.c ****     /* Set the ISR to point to the passive one. */
+ 148:Generated_Source\PSoC5/isr_averageData.c ****     isr_averageData_SetVector(&IntDefaultHandler);
+ 120              		.loc 1 148 0
+ 121 0008 0248     		ldr	r0, .L6
+ 122 000a FFF7FEFF 		bl	isr_averageData_SetVector
+ 149:Generated_Source\PSoC5/isr_averageData.c **** }
+ 123              		.loc 1 149 0
+ 124 000e 00BF     		nop
+ 125 0010 80BD     		pop	{r7, pc}
+ 126              	.L7:
+ 127 0012 00BF     		.align	2
+ 128              	.L6:
+ 129 0014 00000000 		.word	IntDefaultHandler
+ 130              		.cfi_endproc
+ 131              	.LFE65:
+ 132              		.size	isr_averageData_Stop, .-isr_averageData_Stop
+ 133              		.global	__aeabi_uldivmod
+ 134              		.section	.text.isr_averageData_Interrupt,"ax",%progbits
+ 135              		.align	2
+ 136              		.global	isr_averageData_Interrupt
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 6
+
+
+ 137              		.thumb
+ 138              		.thumb_func
+ 139              		.type	isr_averageData_Interrupt, %function
+ 140              	isr_averageData_Interrupt:
+ 141              	.LFB66:
+ 150:Generated_Source\PSoC5/isr_averageData.c **** 
+ 151:Generated_Source\PSoC5/isr_averageData.c **** 
+ 152:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 153:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_Interrupt
+ 154:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 155:Generated_Source\PSoC5/isr_averageData.c **** *
+ 156:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 157:Generated_Source\PSoC5/isr_averageData.c **** *   The default Interrupt Service Routine for isr_averageData.
+ 158:Generated_Source\PSoC5/isr_averageData.c **** *
+ 159:Generated_Source\PSoC5/isr_averageData.c **** *   Add custom code between the coments to keep the next version of this file
+ 160:Generated_Source\PSoC5/isr_averageData.c **** *   from over writting your code.
+ 161:Generated_Source\PSoC5/isr_averageData.c **** *
+ 162:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:  
+ 163:Generated_Source\PSoC5/isr_averageData.c **** *
+ 164:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 165:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 166:Generated_Source\PSoC5/isr_averageData.c **** *
+ 167:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 168:Generated_Source\PSoC5/isr_averageData.c **** CY_ISR(isr_averageData_Interrupt)
+ 169:Generated_Source\PSoC5/isr_averageData.c **** {
+ 142              		.loc 1 169 0
+ 143              		.cfi_startproc
+ 144              		@ args = 0, pretend = 0, frame = 0
+ 145              		@ frame_needed = 1, uses_anonymous_args = 0
+ 146 0000 98B5     		push	{r3, r4, r7, lr}
+ 147              		.cfi_def_cfa_offset 16
+ 148              		.cfi_offset 3, -16
+ 149              		.cfi_offset 4, -12
+ 150              		.cfi_offset 7, -8
+ 151              		.cfi_offset 14, -4
+ 152 0002 00AF     		add	r7, sp, #0
+ 153              		.cfi_def_cfa_register 7
+ 170:Generated_Source\PSoC5/isr_averageData.c ****     #ifdef isr_averageData_INTERRUPT_INTERRUPT_CALLBACK
+ 171:Generated_Source\PSoC5/isr_averageData.c ****         isr_averageData_Interrupt_InterruptCallback();
+ 172:Generated_Source\PSoC5/isr_averageData.c ****     #endif /* isr_averageData_INTERRUPT_INTERRUPT_CALLBACK */ 
+ 173:Generated_Source\PSoC5/isr_averageData.c **** 
+ 174:Generated_Source\PSoC5/isr_averageData.c ****     /*  Place your Interrupt code here. */
+ 175:Generated_Source\PSoC5/isr_averageData.c ****     /* `#START isr_averageData_Interrupt` */
+ 176:Generated_Source\PSoC5/isr_averageData.c ****         CyGlobalIntDisable
+ 154              		.loc 1 176 0
+ 155              		.syntax unified
+ 156              	@ 176 "Generated_Source\PSoC5\isr_averageData.c" 1
+ 157 0004 72B6     		CPSID   i
+ 158              	@ 0 "" 2
+ 177:Generated_Source\PSoC5/isr_averageData.c ****         gAverageData    = gInputSum / SAMPLE_RATE;
+ 159              		.loc 1 177 0
+ 160              		.thumb
+ 161              		.syntax unified
+ 162 0006 0D4B     		ldr	r3, .L9
+ 163 0008 D3E90001 		ldrd	r0, [r3]
+ 164 000c 42F21072 		movw	r2, #10000
+ 165 0010 4FF00003 		mov	r3, #0
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 7
+
+
+ 166 0014 FFF7FEFF 		bl	__aeabi_uldivmod
+ 167 0018 0346     		mov	r3, r0
+ 168 001a 0C46     		mov	r4, r1
+ 169 001c 1A46     		mov	r2, r3
+ 170 001e 084B     		ldr	r3, .L9+4
+ 171 0020 1A60     		str	r2, [r3]
+ 178:Generated_Source\PSoC5/isr_averageData.c ****         gInputSum       = 0;
+ 172              		.loc 1 178 0
+ 173 0022 064A     		ldr	r2, .L9
+ 174 0024 4FF00003 		mov	r3, #0
+ 175 0028 4FF00004 		mov	r4, #0
+ 176 002c C2E90034 		strd	r3, [r2]
+ 179:Generated_Source\PSoC5/isr_averageData.c ****         gSendAverage    = TRUE;
+ 177              		.loc 1 179 0
+ 178 0030 044B     		ldr	r3, .L9+8
+ 179 0032 0122     		movs	r2, #1
+ 180 0034 1A70     		strb	r2, [r3]
+ 180:Generated_Source\PSoC5/isr_averageData.c ****         CyGlobalIntEnable
+ 181              		.loc 1 180 0
+ 182              		.syntax unified
+ 183              	@ 180 "Generated_Source\PSoC5\isr_averageData.c" 1
+ 184 0036 62B6     		CPSIE   i
+ 185              	@ 0 "" 2
+ 181:Generated_Source\PSoC5/isr_averageData.c ****     /* `#END` */
+ 182:Generated_Source\PSoC5/isr_averageData.c **** }
+ 186              		.loc 1 182 0
+ 187              		.thumb
+ 188              		.syntax unified
+ 189 0038 00BF     		nop
+ 190 003a 98BD     		pop	{r3, r4, r7, pc}
+ 191              	.L10:
+ 192              		.align	2
+ 193              	.L9:
+ 194 003c 00000000 		.word	gInputSum
+ 195 0040 00000000 		.word	gAverageData
+ 196 0044 00000000 		.word	gSendAverage
+ 197              		.cfi_endproc
+ 198              	.LFE66:
+ 199              		.size	isr_averageData_Interrupt, .-isr_averageData_Interrupt
+ 200              		.section	.text.isr_averageData_SetVector,"ax",%progbits
+ 201              		.align	2
+ 202              		.global	isr_averageData_SetVector
+ 203              		.thumb
+ 204              		.thumb_func
+ 205              		.type	isr_averageData_SetVector, %function
+ 206              	isr_averageData_SetVector:
+ 207              	.LFB67:
+ 183:Generated_Source\PSoC5/isr_averageData.c **** 
+ 184:Generated_Source\PSoC5/isr_averageData.c **** 
+ 185:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 186:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_SetVector
+ 187:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 188:Generated_Source\PSoC5/isr_averageData.c **** *
+ 189:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 190:Generated_Source\PSoC5/isr_averageData.c **** *   Change the ISR vector for the Interrupt. Note calling isr_averageData_Start
+ 191:Generated_Source\PSoC5/isr_averageData.c **** *   will override any effect this method would have had. To set the vector 
+ 192:Generated_Source\PSoC5/isr_averageData.c **** *   before the component has been started use isr_averageData_StartEx instead.
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 8
+
+
+ 193:Generated_Source\PSoC5/isr_averageData.c **** * 
+ 194:Generated_Source\PSoC5/isr_averageData.c **** *   When defining ISR functions, the CY_ISR and CY_ISR_PROTO macros should be 
+ 195:Generated_Source\PSoC5/isr_averageData.c **** *   used to provide consistent definition across compilers:
+ 196:Generated_Source\PSoC5/isr_averageData.c **** *
+ 197:Generated_Source\PSoC5/isr_averageData.c **** *   Function definition example:
+ 198:Generated_Source\PSoC5/isr_averageData.c **** *   CY_ISR(MyISR)
+ 199:Generated_Source\PSoC5/isr_averageData.c **** *   {
+ 200:Generated_Source\PSoC5/isr_averageData.c **** *   }
+ 201:Generated_Source\PSoC5/isr_averageData.c **** *
+ 202:Generated_Source\PSoC5/isr_averageData.c **** *   Function prototype example:
+ 203:Generated_Source\PSoC5/isr_averageData.c **** *     CY_ISR_PROTO(MyISR);
+ 204:Generated_Source\PSoC5/isr_averageData.c **** *
+ 205:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:
+ 206:Generated_Source\PSoC5/isr_averageData.c **** *   address: Address of the ISR to set in the interrupt vector table.
+ 207:Generated_Source\PSoC5/isr_averageData.c **** *
+ 208:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 209:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 210:Generated_Source\PSoC5/isr_averageData.c **** *
+ 211:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 212:Generated_Source\PSoC5/isr_averageData.c **** void isr_averageData_SetVector(cyisraddress address)
+ 213:Generated_Source\PSoC5/isr_averageData.c **** {
+ 208              		.loc 1 213 0
+ 209              		.cfi_startproc
+ 210              		@ args = 0, pretend = 0, frame = 16
+ 211              		@ frame_needed = 1, uses_anonymous_args = 0
+ 212              		@ link register save eliminated.
+ 213 0000 80B4     		push	{r7}
+ 214              		.cfi_def_cfa_offset 4
+ 215              		.cfi_offset 7, -4
+ 216 0002 85B0     		sub	sp, sp, #20
+ 217              		.cfi_def_cfa_offset 24
+ 218 0004 00AF     		add	r7, sp, #0
+ 219              		.cfi_def_cfa_register 7
+ 220 0006 7860     		str	r0, [r7, #4]
+ 214:Generated_Source\PSoC5/isr_averageData.c ****     cyisraddress * ramVectorTable;
+ 215:Generated_Source\PSoC5/isr_averageData.c **** 
+ 216:Generated_Source\PSoC5/isr_averageData.c ****     ramVectorTable = (cyisraddress *) *CYINT_VECT_TABLE;
+ 221              		.loc 1 216 0
+ 222 0008 054B     		ldr	r3, .L12
+ 223 000a 1B68     		ldr	r3, [r3]
+ 224 000c FB60     		str	r3, [r7, #12]
+ 217:Generated_Source\PSoC5/isr_averageData.c **** 
+ 218:Generated_Source\PSoC5/isr_averageData.c ****     ramVectorTable[CYINT_IRQ_BASE + (uint32)isr_averageData__INTC_NUMBER] = address;
+ 225              		.loc 1 218 0
+ 226 000e FB68     		ldr	r3, [r7, #12]
+ 227 0010 4033     		adds	r3, r3, #64
+ 228 0012 7A68     		ldr	r2, [r7, #4]
+ 229 0014 1A60     		str	r2, [r3]
+ 219:Generated_Source\PSoC5/isr_averageData.c **** }
+ 230              		.loc 1 219 0
+ 231 0016 00BF     		nop
+ 232 0018 1437     		adds	r7, r7, #20
+ 233              		.cfi_def_cfa_offset 4
+ 234 001a BD46     		mov	sp, r7
+ 235              		.cfi_def_cfa_register 13
+ 236              		@ sp needed
+ 237 001c 80BC     		pop	{r7}
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 9
+
+
+ 238              		.cfi_restore 7
+ 239              		.cfi_def_cfa_offset 0
+ 240 001e 7047     		bx	lr
+ 241              	.L13:
+ 242              		.align	2
+ 243              	.L12:
+ 244 0020 08ED00E0 		.word	-536810232
+ 245              		.cfi_endproc
+ 246              	.LFE67:
+ 247              		.size	isr_averageData_SetVector, .-isr_averageData_SetVector
+ 248              		.section	.text.isr_averageData_GetVector,"ax",%progbits
+ 249              		.align	2
+ 250              		.global	isr_averageData_GetVector
+ 251              		.thumb
+ 252              		.thumb_func
+ 253              		.type	isr_averageData_GetVector, %function
+ 254              	isr_averageData_GetVector:
+ 255              	.LFB68:
+ 220:Generated_Source\PSoC5/isr_averageData.c **** 
+ 221:Generated_Source\PSoC5/isr_averageData.c **** 
+ 222:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 223:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_GetVector
+ 224:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 225:Generated_Source\PSoC5/isr_averageData.c **** *
+ 226:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 227:Generated_Source\PSoC5/isr_averageData.c **** *   Gets the "address" of the current ISR vector for the Interrupt.
+ 228:Generated_Source\PSoC5/isr_averageData.c **** *
+ 229:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:
+ 230:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 231:Generated_Source\PSoC5/isr_averageData.c **** *
+ 232:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 233:Generated_Source\PSoC5/isr_averageData.c **** *   Address of the ISR in the interrupt vector table.
+ 234:Generated_Source\PSoC5/isr_averageData.c **** *
+ 235:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 236:Generated_Source\PSoC5/isr_averageData.c **** cyisraddress isr_averageData_GetVector(void)
+ 237:Generated_Source\PSoC5/isr_averageData.c **** {
+ 256              		.loc 1 237 0
+ 257              		.cfi_startproc
+ 258              		@ args = 0, pretend = 0, frame = 8
+ 259              		@ frame_needed = 1, uses_anonymous_args = 0
+ 260              		@ link register save eliminated.
+ 261 0000 80B4     		push	{r7}
+ 262              		.cfi_def_cfa_offset 4
+ 263              		.cfi_offset 7, -4
+ 264 0002 83B0     		sub	sp, sp, #12
+ 265              		.cfi_def_cfa_offset 16
+ 266 0004 00AF     		add	r7, sp, #0
+ 267              		.cfi_def_cfa_register 7
+ 238:Generated_Source\PSoC5/isr_averageData.c ****     cyisraddress * ramVectorTable;
+ 239:Generated_Source\PSoC5/isr_averageData.c **** 
+ 240:Generated_Source\PSoC5/isr_averageData.c ****     ramVectorTable = (cyisraddress *) *CYINT_VECT_TABLE;
+ 268              		.loc 1 240 0
+ 269 0006 054B     		ldr	r3, .L16
+ 270 0008 1B68     		ldr	r3, [r3]
+ 271 000a 7B60     		str	r3, [r7, #4]
+ 241:Generated_Source\PSoC5/isr_averageData.c **** 
+ 242:Generated_Source\PSoC5/isr_averageData.c ****     return ramVectorTable[CYINT_IRQ_BASE + (uint32)isr_averageData__INTC_NUMBER];
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 10
+
+
+ 272              		.loc 1 242 0
+ 273 000c 7B68     		ldr	r3, [r7, #4]
+ 274 000e 1B6C     		ldr	r3, [r3, #64]
+ 243:Generated_Source\PSoC5/isr_averageData.c **** }
+ 275              		.loc 1 243 0
+ 276 0010 1846     		mov	r0, r3
+ 277 0012 0C37     		adds	r7, r7, #12
+ 278              		.cfi_def_cfa_offset 4
+ 279 0014 BD46     		mov	sp, r7
+ 280              		.cfi_def_cfa_register 13
+ 281              		@ sp needed
+ 282 0016 80BC     		pop	{r7}
+ 283              		.cfi_restore 7
+ 284              		.cfi_def_cfa_offset 0
+ 285 0018 7047     		bx	lr
+ 286              	.L17:
+ 287 001a 00BF     		.align	2
+ 288              	.L16:
+ 289 001c 08ED00E0 		.word	-536810232
+ 290              		.cfi_endproc
+ 291              	.LFE68:
+ 292              		.size	isr_averageData_GetVector, .-isr_averageData_GetVector
+ 293              		.section	.text.isr_averageData_SetPriority,"ax",%progbits
+ 294              		.align	2
+ 295              		.global	isr_averageData_SetPriority
+ 296              		.thumb
+ 297              		.thumb_func
+ 298              		.type	isr_averageData_SetPriority, %function
+ 299              	isr_averageData_SetPriority:
+ 300              	.LFB69:
+ 244:Generated_Source\PSoC5/isr_averageData.c **** 
+ 245:Generated_Source\PSoC5/isr_averageData.c **** 
+ 246:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 247:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_SetPriority
+ 248:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 249:Generated_Source\PSoC5/isr_averageData.c **** *
+ 250:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 251:Generated_Source\PSoC5/isr_averageData.c **** *   Sets the Priority of the Interrupt. 
+ 252:Generated_Source\PSoC5/isr_averageData.c **** *
+ 253:Generated_Source\PSoC5/isr_averageData.c **** *   Note calling isr_averageData_Start or isr_averageData_StartEx will 
+ 254:Generated_Source\PSoC5/isr_averageData.c **** *   override any effect this API would have had. This API should only be called
+ 255:Generated_Source\PSoC5/isr_averageData.c **** *   after isr_averageData_Start or isr_averageData_StartEx has been called. 
+ 256:Generated_Source\PSoC5/isr_averageData.c **** *   To set the initial priority for the component, use the Design-Wide Resources
+ 257:Generated_Source\PSoC5/isr_averageData.c **** *   Interrupt Editor.
+ 258:Generated_Source\PSoC5/isr_averageData.c **** *
+ 259:Generated_Source\PSoC5/isr_averageData.c **** *   Note This API has no effect on Non-maskable interrupt NMI).
+ 260:Generated_Source\PSoC5/isr_averageData.c **** *
+ 261:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:
+ 262:Generated_Source\PSoC5/isr_averageData.c **** *   priority: Priority of the interrupt, 0 being the highest priority
+ 263:Generated_Source\PSoC5/isr_averageData.c **** *             PSoC 3 and PSoC 5LP: Priority is from 0 to 7.
+ 264:Generated_Source\PSoC5/isr_averageData.c **** *             PSoC 4: Priority is from 0 to 3.
+ 265:Generated_Source\PSoC5/isr_averageData.c **** *
+ 266:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 267:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 268:Generated_Source\PSoC5/isr_averageData.c **** *
+ 269:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 270:Generated_Source\PSoC5/isr_averageData.c **** void isr_averageData_SetPriority(uint8 priority)
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 11
+
+
+ 271:Generated_Source\PSoC5/isr_averageData.c **** {
+ 301              		.loc 1 271 0
+ 302              		.cfi_startproc
+ 303              		@ args = 0, pretend = 0, frame = 8
+ 304              		@ frame_needed = 1, uses_anonymous_args = 0
+ 305              		@ link register save eliminated.
+ 306 0000 80B4     		push	{r7}
+ 307              		.cfi_def_cfa_offset 4
+ 308              		.cfi_offset 7, -4
+ 309 0002 83B0     		sub	sp, sp, #12
+ 310              		.cfi_def_cfa_offset 16
+ 311 0004 00AF     		add	r7, sp, #0
+ 312              		.cfi_def_cfa_register 7
+ 313 0006 0346     		mov	r3, r0
+ 314 0008 FB71     		strb	r3, [r7, #7]
+ 272:Generated_Source\PSoC5/isr_averageData.c ****     *isr_averageData_INTC_PRIOR = priority << 5;
+ 315              		.loc 1 272 0
+ 316 000a 054A     		ldr	r2, .L19
+ 317 000c FB79     		ldrb	r3, [r7, #7]
+ 318 000e 5B01     		lsls	r3, r3, #5
+ 319 0010 DBB2     		uxtb	r3, r3
+ 320 0012 1370     		strb	r3, [r2]
+ 273:Generated_Source\PSoC5/isr_averageData.c **** }
+ 321              		.loc 1 273 0
+ 322 0014 00BF     		nop
+ 323 0016 0C37     		adds	r7, r7, #12
+ 324              		.cfi_def_cfa_offset 4
+ 325 0018 BD46     		mov	sp, r7
+ 326              		.cfi_def_cfa_register 13
+ 327              		@ sp needed
+ 328 001a 80BC     		pop	{r7}
+ 329              		.cfi_restore 7
+ 330              		.cfi_def_cfa_offset 0
+ 331 001c 7047     		bx	lr
+ 332              	.L20:
+ 333 001e 00BF     		.align	2
+ 334              	.L19:
+ 335 0020 00E400E0 		.word	-536812544
+ 336              		.cfi_endproc
+ 337              	.LFE69:
+ 338              		.size	isr_averageData_SetPriority, .-isr_averageData_SetPriority
+ 339              		.section	.text.isr_averageData_GetPriority,"ax",%progbits
+ 340              		.align	2
+ 341              		.global	isr_averageData_GetPriority
+ 342              		.thumb
+ 343              		.thumb_func
+ 344              		.type	isr_averageData_GetPriority, %function
+ 345              	isr_averageData_GetPriority:
+ 346              	.LFB70:
+ 274:Generated_Source\PSoC5/isr_averageData.c **** 
+ 275:Generated_Source\PSoC5/isr_averageData.c **** 
+ 276:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 277:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_GetPriority
+ 278:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 279:Generated_Source\PSoC5/isr_averageData.c **** *
+ 280:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 281:Generated_Source\PSoC5/isr_averageData.c **** *   Gets the Priority of the Interrupt.
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 12
+
+
+ 282:Generated_Source\PSoC5/isr_averageData.c **** *
+ 283:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:
+ 284:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 285:Generated_Source\PSoC5/isr_averageData.c **** *
+ 286:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 287:Generated_Source\PSoC5/isr_averageData.c **** *   Priority of the interrupt, 0 being the highest priority
+ 288:Generated_Source\PSoC5/isr_averageData.c **** *    PSoC 3 and PSoC 5LP: Priority is from 0 to 7.
+ 289:Generated_Source\PSoC5/isr_averageData.c **** *    PSoC 4: Priority is from 0 to 3.
+ 290:Generated_Source\PSoC5/isr_averageData.c **** *
+ 291:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 292:Generated_Source\PSoC5/isr_averageData.c **** uint8 isr_averageData_GetPriority(void)
+ 293:Generated_Source\PSoC5/isr_averageData.c **** {
+ 347              		.loc 1 293 0
+ 348              		.cfi_startproc
+ 349              		@ args = 0, pretend = 0, frame = 8
+ 350              		@ frame_needed = 1, uses_anonymous_args = 0
+ 351              		@ link register save eliminated.
+ 352 0000 80B4     		push	{r7}
+ 353              		.cfi_def_cfa_offset 4
+ 354              		.cfi_offset 7, -4
+ 355 0002 83B0     		sub	sp, sp, #12
+ 356              		.cfi_def_cfa_offset 16
+ 357 0004 00AF     		add	r7, sp, #0
+ 358              		.cfi_def_cfa_register 7
+ 294:Generated_Source\PSoC5/isr_averageData.c ****     uint8 priority;
+ 295:Generated_Source\PSoC5/isr_averageData.c **** 
+ 296:Generated_Source\PSoC5/isr_averageData.c **** 
+ 297:Generated_Source\PSoC5/isr_averageData.c ****     priority = *isr_averageData_INTC_PRIOR >> 5;
+ 359              		.loc 1 297 0
+ 360 0006 054B     		ldr	r3, .L23
+ 361 0008 1B78     		ldrb	r3, [r3]
+ 362 000a DBB2     		uxtb	r3, r3
+ 363 000c 5B09     		lsrs	r3, r3, #5
+ 364 000e FB71     		strb	r3, [r7, #7]
+ 298:Generated_Source\PSoC5/isr_averageData.c **** 
+ 299:Generated_Source\PSoC5/isr_averageData.c ****     return priority;
+ 365              		.loc 1 299 0
+ 366 0010 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 300:Generated_Source\PSoC5/isr_averageData.c **** }
+ 367              		.loc 1 300 0
+ 368 0012 1846     		mov	r0, r3
+ 369 0014 0C37     		adds	r7, r7, #12
+ 370              		.cfi_def_cfa_offset 4
+ 371 0016 BD46     		mov	sp, r7
+ 372              		.cfi_def_cfa_register 13
+ 373              		@ sp needed
+ 374 0018 80BC     		pop	{r7}
+ 375              		.cfi_restore 7
+ 376              		.cfi_def_cfa_offset 0
+ 377 001a 7047     		bx	lr
+ 378              	.L24:
+ 379              		.align	2
+ 380              	.L23:
+ 381 001c 00E400E0 		.word	-536812544
+ 382              		.cfi_endproc
+ 383              	.LFE70:
+ 384              		.size	isr_averageData_GetPriority, .-isr_averageData_GetPriority
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 13
+
+
+ 385              		.section	.text.isr_averageData_Enable,"ax",%progbits
+ 386              		.align	2
+ 387              		.global	isr_averageData_Enable
+ 388              		.thumb
+ 389              		.thumb_func
+ 390              		.type	isr_averageData_Enable, %function
+ 391              	isr_averageData_Enable:
+ 392              	.LFB71:
+ 301:Generated_Source\PSoC5/isr_averageData.c **** 
+ 302:Generated_Source\PSoC5/isr_averageData.c **** 
+ 303:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 304:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_Enable
+ 305:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 306:Generated_Source\PSoC5/isr_averageData.c **** *
+ 307:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 308:Generated_Source\PSoC5/isr_averageData.c **** *   Enables the interrupt to the interrupt controller. Do not call this function
+ 309:Generated_Source\PSoC5/isr_averageData.c **** *   unless ISR_Start() has been called or the functionality of the ISR_Start() 
+ 310:Generated_Source\PSoC5/isr_averageData.c **** *   function, which sets the vector and the priority, has been called.
+ 311:Generated_Source\PSoC5/isr_averageData.c **** *
+ 312:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:
+ 313:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 314:Generated_Source\PSoC5/isr_averageData.c **** *
+ 315:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 316:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 317:Generated_Source\PSoC5/isr_averageData.c **** *
+ 318:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 319:Generated_Source\PSoC5/isr_averageData.c **** void isr_averageData_Enable(void)
+ 320:Generated_Source\PSoC5/isr_averageData.c **** {
+ 393              		.loc 1 320 0
+ 394              		.cfi_startproc
+ 395              		@ args = 0, pretend = 0, frame = 0
+ 396              		@ frame_needed = 1, uses_anonymous_args = 0
+ 397              		@ link register save eliminated.
+ 398 0000 80B4     		push	{r7}
+ 399              		.cfi_def_cfa_offset 4
+ 400              		.cfi_offset 7, -4
+ 401 0002 00AF     		add	r7, sp, #0
+ 402              		.cfi_def_cfa_register 7
+ 321:Generated_Source\PSoC5/isr_averageData.c ****     /* Enable the general interrupt. */
+ 322:Generated_Source\PSoC5/isr_averageData.c ****     *isr_averageData_INTC_SET_EN = isr_averageData__INTC_MASK;
+ 403              		.loc 1 322 0
+ 404 0004 034B     		ldr	r3, .L26
+ 405 0006 0122     		movs	r2, #1
+ 406 0008 1A60     		str	r2, [r3]
+ 323:Generated_Source\PSoC5/isr_averageData.c **** }
+ 407              		.loc 1 323 0
+ 408 000a 00BF     		nop
+ 409 000c BD46     		mov	sp, r7
+ 410              		.cfi_def_cfa_register 13
+ 411              		@ sp needed
+ 412 000e 80BC     		pop	{r7}
+ 413              		.cfi_restore 7
+ 414              		.cfi_def_cfa_offset 0
+ 415 0010 7047     		bx	lr
+ 416              	.L27:
+ 417 0012 00BF     		.align	2
+ 418              	.L26:
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 14
+
+
+ 419 0014 00E100E0 		.word	-536813312
+ 420              		.cfi_endproc
+ 421              	.LFE71:
+ 422              		.size	isr_averageData_Enable, .-isr_averageData_Enable
+ 423              		.section	.text.isr_averageData_GetState,"ax",%progbits
+ 424              		.align	2
+ 425              		.global	isr_averageData_GetState
+ 426              		.thumb
+ 427              		.thumb_func
+ 428              		.type	isr_averageData_GetState, %function
+ 429              	isr_averageData_GetState:
+ 430              	.LFB72:
+ 324:Generated_Source\PSoC5/isr_averageData.c **** 
+ 325:Generated_Source\PSoC5/isr_averageData.c **** 
+ 326:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 327:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_GetState
+ 328:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 329:Generated_Source\PSoC5/isr_averageData.c **** *
+ 330:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 331:Generated_Source\PSoC5/isr_averageData.c **** *   Gets the state (enabled, disabled) of the Interrupt.
+ 332:Generated_Source\PSoC5/isr_averageData.c **** *
+ 333:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:
+ 334:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 335:Generated_Source\PSoC5/isr_averageData.c **** *
+ 336:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 337:Generated_Source\PSoC5/isr_averageData.c **** *   1 if enabled, 0 if disabled.
+ 338:Generated_Source\PSoC5/isr_averageData.c **** *
+ 339:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 340:Generated_Source\PSoC5/isr_averageData.c **** uint8 isr_averageData_GetState(void)
+ 341:Generated_Source\PSoC5/isr_averageData.c **** {
+ 431              		.loc 1 341 0
+ 432              		.cfi_startproc
+ 433              		@ args = 0, pretend = 0, frame = 0
+ 434              		@ frame_needed = 1, uses_anonymous_args = 0
+ 435              		@ link register save eliminated.
+ 436 0000 80B4     		push	{r7}
+ 437              		.cfi_def_cfa_offset 4
+ 438              		.cfi_offset 7, -4
+ 439 0002 00AF     		add	r7, sp, #0
+ 440              		.cfi_def_cfa_register 7
+ 342:Generated_Source\PSoC5/isr_averageData.c ****     /* Get the state of the general interrupt. */
+ 343:Generated_Source\PSoC5/isr_averageData.c ****     return ((*isr_averageData_INTC_SET_EN & (uint32)isr_averageData__INTC_MASK) != 0u) ? 1u:0u;
+ 441              		.loc 1 343 0
+ 442 0004 044B     		ldr	r3, .L30
+ 443 0006 1B68     		ldr	r3, [r3]
+ 444 0008 DBB2     		uxtb	r3, r3
+ 445 000a 03F00103 		and	r3, r3, #1
+ 446 000e DBB2     		uxtb	r3, r3
+ 344:Generated_Source\PSoC5/isr_averageData.c **** }
+ 447              		.loc 1 344 0
+ 448 0010 1846     		mov	r0, r3
+ 449 0012 BD46     		mov	sp, r7
+ 450              		.cfi_def_cfa_register 13
+ 451              		@ sp needed
+ 452 0014 80BC     		pop	{r7}
+ 453              		.cfi_restore 7
+ 454              		.cfi_def_cfa_offset 0
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 15
+
+
+ 455 0016 7047     		bx	lr
+ 456              	.L31:
+ 457              		.align	2
+ 458              	.L30:
+ 459 0018 00E100E0 		.word	-536813312
+ 460              		.cfi_endproc
+ 461              	.LFE72:
+ 462              		.size	isr_averageData_GetState, .-isr_averageData_GetState
+ 463              		.section	.text.isr_averageData_Disable,"ax",%progbits
+ 464              		.align	2
+ 465              		.global	isr_averageData_Disable
+ 466              		.thumb
+ 467              		.thumb_func
+ 468              		.type	isr_averageData_Disable, %function
+ 469              	isr_averageData_Disable:
+ 470              	.LFB73:
+ 345:Generated_Source\PSoC5/isr_averageData.c **** 
+ 346:Generated_Source\PSoC5/isr_averageData.c **** 
+ 347:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 348:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_Disable
+ 349:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 350:Generated_Source\PSoC5/isr_averageData.c **** *
+ 351:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 352:Generated_Source\PSoC5/isr_averageData.c **** *   Disables the Interrupt in the interrupt controller.
+ 353:Generated_Source\PSoC5/isr_averageData.c **** *
+ 354:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:
+ 355:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 356:Generated_Source\PSoC5/isr_averageData.c **** *
+ 357:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 358:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 359:Generated_Source\PSoC5/isr_averageData.c **** *
+ 360:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 361:Generated_Source\PSoC5/isr_averageData.c **** void isr_averageData_Disable(void)
+ 362:Generated_Source\PSoC5/isr_averageData.c **** {
+ 471              		.loc 1 362 0
+ 472              		.cfi_startproc
+ 473              		@ args = 0, pretend = 0, frame = 0
+ 474              		@ frame_needed = 1, uses_anonymous_args = 0
+ 475              		@ link register save eliminated.
+ 476 0000 80B4     		push	{r7}
+ 477              		.cfi_def_cfa_offset 4
+ 478              		.cfi_offset 7, -4
+ 479 0002 00AF     		add	r7, sp, #0
+ 480              		.cfi_def_cfa_register 7
+ 363:Generated_Source\PSoC5/isr_averageData.c ****     /* Disable the general interrupt. */
+ 364:Generated_Source\PSoC5/isr_averageData.c ****     *isr_averageData_INTC_CLR_EN = isr_averageData__INTC_MASK;
+ 481              		.loc 1 364 0
+ 482 0004 034B     		ldr	r3, .L33
+ 483 0006 0122     		movs	r2, #1
+ 484 0008 1A60     		str	r2, [r3]
+ 365:Generated_Source\PSoC5/isr_averageData.c **** }
+ 485              		.loc 1 365 0
+ 486 000a 00BF     		nop
+ 487 000c BD46     		mov	sp, r7
+ 488              		.cfi_def_cfa_register 13
+ 489              		@ sp needed
+ 490 000e 80BC     		pop	{r7}
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 16
+
+
+ 491              		.cfi_restore 7
+ 492              		.cfi_def_cfa_offset 0
+ 493 0010 7047     		bx	lr
+ 494              	.L34:
+ 495 0012 00BF     		.align	2
+ 496              	.L33:
+ 497 0014 80E100E0 		.word	-536813184
+ 498              		.cfi_endproc
+ 499              	.LFE73:
+ 500              		.size	isr_averageData_Disable, .-isr_averageData_Disable
+ 501              		.section	.text.isr_averageData_SetPending,"ax",%progbits
+ 502              		.align	2
+ 503              		.global	isr_averageData_SetPending
+ 504              		.thumb
+ 505              		.thumb_func
+ 506              		.type	isr_averageData_SetPending, %function
+ 507              	isr_averageData_SetPending:
+ 508              	.LFB74:
+ 366:Generated_Source\PSoC5/isr_averageData.c **** 
+ 367:Generated_Source\PSoC5/isr_averageData.c **** 
+ 368:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 369:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_SetPending
+ 370:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 371:Generated_Source\PSoC5/isr_averageData.c **** *
+ 372:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 373:Generated_Source\PSoC5/isr_averageData.c **** *   Causes the Interrupt to enter the pending state, a software method of
+ 374:Generated_Source\PSoC5/isr_averageData.c **** *   generating the interrupt.
+ 375:Generated_Source\PSoC5/isr_averageData.c **** *
+ 376:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:
+ 377:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 378:Generated_Source\PSoC5/isr_averageData.c **** *
+ 379:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 380:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 381:Generated_Source\PSoC5/isr_averageData.c **** *
+ 382:Generated_Source\PSoC5/isr_averageData.c **** * Side Effects:
+ 383:Generated_Source\PSoC5/isr_averageData.c **** *   If interrupts are enabled and the interrupt is set up properly, the ISR is
+ 384:Generated_Source\PSoC5/isr_averageData.c **** *   entered (depending on the priority of this interrupt and other pending 
+ 385:Generated_Source\PSoC5/isr_averageData.c **** *   interrupts).
+ 386:Generated_Source\PSoC5/isr_averageData.c **** *
+ 387:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 388:Generated_Source\PSoC5/isr_averageData.c **** void isr_averageData_SetPending(void)
+ 389:Generated_Source\PSoC5/isr_averageData.c **** {
+ 509              		.loc 1 389 0
+ 510              		.cfi_startproc
+ 511              		@ args = 0, pretend = 0, frame = 0
+ 512              		@ frame_needed = 1, uses_anonymous_args = 0
+ 513              		@ link register save eliminated.
+ 514 0000 80B4     		push	{r7}
+ 515              		.cfi_def_cfa_offset 4
+ 516              		.cfi_offset 7, -4
+ 517 0002 00AF     		add	r7, sp, #0
+ 518              		.cfi_def_cfa_register 7
+ 390:Generated_Source\PSoC5/isr_averageData.c ****     *isr_averageData_INTC_SET_PD = isr_averageData__INTC_MASK;
+ 519              		.loc 1 390 0
+ 520 0004 034B     		ldr	r3, .L36
+ 521 0006 0122     		movs	r2, #1
+ 522 0008 1A60     		str	r2, [r3]
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 17
+
+
+ 391:Generated_Source\PSoC5/isr_averageData.c **** }
+ 523              		.loc 1 391 0
+ 524 000a 00BF     		nop
+ 525 000c BD46     		mov	sp, r7
+ 526              		.cfi_def_cfa_register 13
+ 527              		@ sp needed
+ 528 000e 80BC     		pop	{r7}
+ 529              		.cfi_restore 7
+ 530              		.cfi_def_cfa_offset 0
+ 531 0010 7047     		bx	lr
+ 532              	.L37:
+ 533 0012 00BF     		.align	2
+ 534              	.L36:
+ 535 0014 00E200E0 		.word	-536813056
+ 536              		.cfi_endproc
+ 537              	.LFE74:
+ 538              		.size	isr_averageData_SetPending, .-isr_averageData_SetPending
+ 539              		.section	.text.isr_averageData_ClearPending,"ax",%progbits
+ 540              		.align	2
+ 541              		.global	isr_averageData_ClearPending
+ 542              		.thumb
+ 543              		.thumb_func
+ 544              		.type	isr_averageData_ClearPending, %function
+ 545              	isr_averageData_ClearPending:
+ 546              	.LFB75:
+ 392:Generated_Source\PSoC5/isr_averageData.c **** 
+ 393:Generated_Source\PSoC5/isr_averageData.c **** 
+ 394:Generated_Source\PSoC5/isr_averageData.c **** /*******************************************************************************
+ 395:Generated_Source\PSoC5/isr_averageData.c **** * Function Name: isr_averageData_ClearPending
+ 396:Generated_Source\PSoC5/isr_averageData.c **** ********************************************************************************
+ 397:Generated_Source\PSoC5/isr_averageData.c **** *
+ 398:Generated_Source\PSoC5/isr_averageData.c **** * Summary:
+ 399:Generated_Source\PSoC5/isr_averageData.c **** *   Clears a pending interrupt in the interrupt controller.
+ 400:Generated_Source\PSoC5/isr_averageData.c **** *
+ 401:Generated_Source\PSoC5/isr_averageData.c **** *   Note Some interrupt sources are clear-on-read and require the block 
+ 402:Generated_Source\PSoC5/isr_averageData.c **** *   interrupt/status register to be read/cleared with the appropriate block API 
+ 403:Generated_Source\PSoC5/isr_averageData.c **** *   (GPIO, UART, and so on). Otherwise the ISR will continue to remain in 
+ 404:Generated_Source\PSoC5/isr_averageData.c **** *   pending state even though the interrupt itself is cleared using this API.
+ 405:Generated_Source\PSoC5/isr_averageData.c **** *
+ 406:Generated_Source\PSoC5/isr_averageData.c **** * Parameters:
+ 407:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 408:Generated_Source\PSoC5/isr_averageData.c **** *
+ 409:Generated_Source\PSoC5/isr_averageData.c **** * Return:
+ 410:Generated_Source\PSoC5/isr_averageData.c **** *   None
+ 411:Generated_Source\PSoC5/isr_averageData.c **** *
+ 412:Generated_Source\PSoC5/isr_averageData.c **** *******************************************************************************/
+ 413:Generated_Source\PSoC5/isr_averageData.c **** void isr_averageData_ClearPending(void)
+ 414:Generated_Source\PSoC5/isr_averageData.c **** {
+ 547              		.loc 1 414 0
+ 548              		.cfi_startproc
+ 549              		@ args = 0, pretend = 0, frame = 0
+ 550              		@ frame_needed = 1, uses_anonymous_args = 0
+ 551              		@ link register save eliminated.
+ 552 0000 80B4     		push	{r7}
+ 553              		.cfi_def_cfa_offset 4
+ 554              		.cfi_offset 7, -4
+ 555 0002 00AF     		add	r7, sp, #0
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 18
+
+
+ 556              		.cfi_def_cfa_register 7
+ 415:Generated_Source\PSoC5/isr_averageData.c ****     *isr_averageData_INTC_CLR_PD = isr_averageData__INTC_MASK;
+ 557              		.loc 1 415 0
+ 558 0004 034B     		ldr	r3, .L39
+ 559 0006 0122     		movs	r2, #1
+ 560 0008 1A60     		str	r2, [r3]
+ 416:Generated_Source\PSoC5/isr_averageData.c **** }
+ 561              		.loc 1 416 0
+ 562 000a 00BF     		nop
+ 563 000c BD46     		mov	sp, r7
+ 564              		.cfi_def_cfa_register 13
+ 565              		@ sp needed
+ 566 000e 80BC     		pop	{r7}
+ 567              		.cfi_restore 7
+ 568              		.cfi_def_cfa_offset 0
+ 569 0010 7047     		bx	lr
+ 570              	.L40:
+ 571 0012 00BF     		.align	2
+ 572              	.L39:
+ 573 0014 80E200E0 		.word	-536812928
+ 574              		.cfi_endproc
+ 575              	.LFE75:
+ 576              		.size	isr_averageData_ClearPending, .-isr_averageData_ClearPending
+ 577              		.text
+ 578              	.Letext0:
+ 579              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 580              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 581              		.file 4 "Generated_Source\\PSoC5/cytypes.h"
+ 582              		.file 5 "Generated_Source\\PSoC5/core_cm3.h"
+ 583              		.section	.debug_info,"",%progbits
+ 584              	.Ldebug_info0:
+ 585 0000 96020000 		.4byte	0x296
+ 586 0004 0400     		.2byte	0x4
+ 587 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 588 000a 04       		.byte	0x4
+ 589 000b 01       		.uleb128 0x1
+ 590 000c 20000000 		.4byte	.LASF41
+ 591 0010 0C       		.byte	0xc
+ 592 0011 2F010000 		.4byte	.LASF42
+ 593 0015 AE000000 		.4byte	.LASF43
+ 594 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 595 001d 00000000 		.4byte	0
+ 596 0021 00000000 		.4byte	.Ldebug_line0
+ 597 0025 02       		.uleb128 0x2
+ 598 0026 04       		.byte	0x4
+ 599 0027 05       		.byte	0x5
+ 600 0028 696E7400 		.ascii	"int\000"
+ 601 002c 03       		.uleb128 0x3
+ 602 002d 04       		.byte	0x4
+ 603 002e 07       		.byte	0x7
+ 604 002f 38020000 		.4byte	.LASF0
+ 605 0033 03       		.uleb128 0x3
+ 606 0034 08       		.byte	0x8
+ 607 0035 05       		.byte	0x5
+ 608 0036 8B010000 		.4byte	.LASF1
+ 609 003a 03       		.uleb128 0x3
+ 610 003b 08       		.byte	0x8
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 19
+
+
+ 611 003c 04       		.byte	0x4
+ 612 003d 1E030000 		.4byte	.LASF2
+ 613 0041 03       		.uleb128 0x3
+ 614 0042 01       		.byte	0x1
+ 615 0043 06       		.byte	0x6
+ 616 0044 9A020000 		.4byte	.LASF3
+ 617 0048 03       		.uleb128 0x3
+ 618 0049 01       		.byte	0x1
+ 619 004a 08       		.byte	0x8
+ 620 004b 99010000 		.4byte	.LASF4
+ 621 004f 03       		.uleb128 0x3
+ 622 0050 02       		.byte	0x2
+ 623 0051 05       		.byte	0x5
+ 624 0052 F0020000 		.4byte	.LASF5
+ 625 0056 03       		.uleb128 0x3
+ 626 0057 02       		.byte	0x2
+ 627 0058 07       		.byte	0x7
+ 628 0059 BE010000 		.4byte	.LASF6
+ 629 005d 04       		.uleb128 0x4
+ 630 005e 25010000 		.4byte	.LASF12
+ 631 0062 02       		.byte	0x2
+ 632 0063 3F       		.byte	0x3f
+ 633 0064 68000000 		.4byte	0x68
+ 634 0068 03       		.uleb128 0x3
+ 635 0069 04       		.byte	0x4
+ 636 006a 05       		.byte	0x5
+ 637 006b 00030000 		.4byte	.LASF7
+ 638 006f 03       		.uleb128 0x3
+ 639 0070 04       		.byte	0x4
+ 640 0071 07       		.byte	0x7
+ 641 0072 AC010000 		.4byte	.LASF8
+ 642 0076 03       		.uleb128 0x3
+ 643 0077 08       		.byte	0x8
+ 644 0078 07       		.byte	0x7
+ 645 0079 4D020000 		.4byte	.LASF9
+ 646 007d 03       		.uleb128 0x3
+ 647 007e 04       		.byte	0x4
+ 648 007f 07       		.byte	0x7
+ 649 0080 AE020000 		.4byte	.LASF10
+ 650 0084 03       		.uleb128 0x3
+ 651 0085 01       		.byte	0x1
+ 652 0086 08       		.byte	0x8
+ 653 0087 CF020000 		.4byte	.LASF11
+ 654 008b 05       		.uleb128 0x5
+ 655 008c 04       		.byte	0x4
+ 656 008d 91000000 		.4byte	0x91
+ 657 0091 06       		.uleb128 0x6
+ 658 0092 04       		.uleb128 0x4
+ 659 0093 A6020000 		.4byte	.LASF13
+ 660 0097 03       		.byte	0x3
+ 661 0098 2C       		.byte	0x2c
+ 662 0099 5D000000 		.4byte	0x5d
+ 663 009d 07       		.uleb128 0x7
+ 664 009e FA020000 		.4byte	.LASF14
+ 665 00a2 04       		.byte	0x4
+ 666 00a3 E801     		.2byte	0x1e8
+ 667 00a5 48000000 		.4byte	0x48
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 20
+
+
+ 668 00a9 07       		.uleb128 0x7
+ 669 00aa 19020000 		.4byte	.LASF15
+ 670 00ae 04       		.byte	0x4
+ 671 00af EA01     		.2byte	0x1ea
+ 672 00b1 6F000000 		.4byte	0x6f
+ 673 00b5 03       		.uleb128 0x3
+ 674 00b6 04       		.byte	0x4
+ 675 00b7 04       		.byte	0x4
+ 676 00b8 85010000 		.4byte	.LASF16
+ 677 00bc 03       		.uleb128 0x3
+ 678 00bd 08       		.byte	0x8
+ 679 00be 04       		.byte	0x4
+ 680 00bf FF010000 		.4byte	.LASF17
+ 681 00c3 07       		.uleb128 0x7
+ 682 00c4 D1010000 		.4byte	.LASF18
+ 683 00c8 04       		.byte	0x4
+ 684 00c9 F401     		.2byte	0x1f4
+ 685 00cb 76000000 		.4byte	0x76
+ 686 00cf 07       		.uleb128 0x7
+ 687 00d0 A7010000 		.4byte	.LASF19
+ 688 00d4 04       		.byte	0x4
+ 689 00d5 9202     		.2byte	0x292
+ 690 00d7 DB000000 		.4byte	0xdb
+ 691 00db 08       		.uleb128 0x8
+ 692 00dc 9D000000 		.4byte	0x9d
+ 693 00e0 07       		.uleb128 0x7
+ 694 00e1 1A000000 		.4byte	.LASF20
+ 695 00e5 04       		.byte	0x4
+ 696 00e6 9402     		.2byte	0x294
+ 697 00e8 EC000000 		.4byte	0xec
+ 698 00ec 08       		.uleb128 0x8
+ 699 00ed A9000000 		.4byte	0xa9
+ 700 00f1 07       		.uleb128 0x7
+ 701 00f2 8D020000 		.4byte	.LASF21
+ 702 00f6 04       		.byte	0x4
+ 703 00f7 A402     		.2byte	0x2a4
+ 704 00f9 8B000000 		.4byte	0x8b
+ 705 00fd 09       		.uleb128 0x9
+ 706 00fe 6F010000 		.4byte	.LASF22
+ 707 0102 01       		.byte	0x1
+ 708 0103 45       		.byte	0x45
+ 709 0104 00000000 		.4byte	.LFB63
+ 710 0108 20000000 		.4byte	.LFE63-.LFB63
+ 711 010c 01       		.uleb128 0x1
+ 712 010d 9C       		.byte	0x9c
+ 713 010e 0A       		.uleb128 0xa
+ 714 010f 20020000 		.4byte	.LASF25
+ 715 0113 01       		.byte	0x1
+ 716 0114 70       		.byte	0x70
+ 717 0115 00000000 		.4byte	.LFB64
+ 718 0119 24000000 		.4byte	.LFE64-.LFB64
+ 719 011d 01       		.uleb128 0x1
+ 720 011e 9C       		.byte	0x9c
+ 721 011f 32010000 		.4byte	0x132
+ 722 0123 0B       		.uleb128 0xb
+ 723 0124 45020000 		.4byte	.LASF27
+ 724 0128 01       		.byte	0x1
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 21
+
+
+ 725 0129 70       		.byte	0x70
+ 726 012a F1000000 		.4byte	0xf1
+ 727 012e 02       		.uleb128 0x2
+ 728 012f 91       		.byte	0x91
+ 729 0130 74       		.sleb128 -12
+ 730 0131 00       		.byte	0
+ 731 0132 09       		.uleb128 0x9
+ 732 0133 09030000 		.4byte	.LASF23
+ 733 0137 01       		.byte	0x1
+ 734 0138 8E       		.byte	0x8e
+ 735 0139 00000000 		.4byte	.LFB65
+ 736 013d 18000000 		.4byte	.LFE65-.LFB65
+ 737 0141 01       		.uleb128 0x1
+ 738 0142 9C       		.byte	0x9c
+ 739 0143 09       		.uleb128 0x9
+ 740 0144 D8010000 		.4byte	.LASF24
+ 741 0148 01       		.byte	0x1
+ 742 0149 A8       		.byte	0xa8
+ 743 014a 00000000 		.4byte	.LFB66
+ 744 014e 48000000 		.4byte	.LFE66-.LFB66
+ 745 0152 01       		.uleb128 0x1
+ 746 0153 9C       		.byte	0x9c
+ 747 0154 0C       		.uleb128 0xc
+ 748 0155 00000000 		.4byte	.LASF26
+ 749 0159 01       		.byte	0x1
+ 750 015a D4       		.byte	0xd4
+ 751 015b 00000000 		.4byte	.LFB67
+ 752 015f 24000000 		.4byte	.LFE67-.LFB67
+ 753 0163 01       		.uleb128 0x1
+ 754 0164 9C       		.byte	0x9c
+ 755 0165 86010000 		.4byte	0x186
+ 756 0169 0B       		.uleb128 0xb
+ 757 016a 45020000 		.4byte	.LASF27
+ 758 016e 01       		.byte	0x1
+ 759 016f D4       		.byte	0xd4
+ 760 0170 F1000000 		.4byte	0xf1
+ 761 0174 02       		.uleb128 0x2
+ 762 0175 91       		.byte	0x91
+ 763 0176 6C       		.sleb128 -20
+ 764 0177 0D       		.uleb128 0xd
+ 765 0178 D4020000 		.4byte	.LASF28
+ 766 017c 01       		.byte	0x1
+ 767 017d D6       		.byte	0xd6
+ 768 017e 86010000 		.4byte	0x186
+ 769 0182 02       		.uleb128 0x2
+ 770 0183 91       		.byte	0x91
+ 771 0184 74       		.sleb128 -12
+ 772 0185 00       		.byte	0
+ 773 0186 05       		.uleb128 0x5
+ 774 0187 04       		.byte	0x4
+ 775 0188 F1000000 		.4byte	0xf1
+ 776 018c 0E       		.uleb128 0xe
+ 777 018d 7E030000 		.4byte	.LASF31
+ 778 0191 01       		.byte	0x1
+ 779 0192 EC       		.byte	0xec
+ 780 0193 F1000000 		.4byte	0xf1
+ 781 0197 00000000 		.4byte	.LFB68
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 22
+
+
+ 782 019b 20000000 		.4byte	.LFE68-.LFB68
+ 783 019f 01       		.uleb128 0x1
+ 784 01a0 9C       		.byte	0x9c
+ 785 01a1 B4010000 		.4byte	0x1b4
+ 786 01a5 0D       		.uleb128 0xd
+ 787 01a6 D4020000 		.4byte	.LASF28
+ 788 01aa 01       		.byte	0x1
+ 789 01ab EE       		.byte	0xee
+ 790 01ac 86010000 		.4byte	0x186
+ 791 01b0 02       		.uleb128 0x2
+ 792 01b1 91       		.byte	0x91
+ 793 01b2 74       		.sleb128 -12
+ 794 01b3 00       		.byte	0
+ 795 01b4 0F       		.uleb128 0xf
+ 796 01b5 47030000 		.4byte	.LASF29
+ 797 01b9 01       		.byte	0x1
+ 798 01ba 0E01     		.2byte	0x10e
+ 799 01bc 00000000 		.4byte	.LFB69
+ 800 01c0 24000000 		.4byte	.LFE69-.LFB69
+ 801 01c4 01       		.uleb128 0x1
+ 802 01c5 9C       		.byte	0x9c
+ 803 01c6 DA010000 		.4byte	0x1da
+ 804 01ca 10       		.uleb128 0x10
+ 805 01cb 10020000 		.4byte	.LASF30
+ 806 01cf 01       		.byte	0x1
+ 807 01d0 0E01     		.2byte	0x10e
+ 808 01d2 9D000000 		.4byte	0x9d
+ 809 01d6 02       		.uleb128 0x2
+ 810 01d7 91       		.byte	0x91
+ 811 01d8 77       		.sleb128 -9
+ 812 01d9 00       		.byte	0
+ 813 01da 11       		.uleb128 0x11
+ 814 01db 71020000 		.4byte	.LASF32
+ 815 01df 01       		.byte	0x1
+ 816 01e0 2401     		.2byte	0x124
+ 817 01e2 9D000000 		.4byte	0x9d
+ 818 01e6 00000000 		.4byte	.LFB70
+ 819 01ea 20000000 		.4byte	.LFE70-.LFB70
+ 820 01ee 01       		.uleb128 0x1
+ 821 01ef 9C       		.byte	0x9c
+ 822 01f0 04020000 		.4byte	0x204
+ 823 01f4 12       		.uleb128 0x12
+ 824 01f5 10020000 		.4byte	.LASF30
+ 825 01f9 01       		.byte	0x1
+ 826 01fa 2601     		.2byte	0x126
+ 827 01fc 9D000000 		.4byte	0x9d
+ 828 0200 02       		.uleb128 0x2
+ 829 0201 91       		.byte	0x91
+ 830 0202 77       		.sleb128 -9
+ 831 0203 00       		.byte	0
+ 832 0204 13       		.uleb128 0x13
+ 833 0205 58010000 		.4byte	.LASF33
+ 834 0209 01       		.byte	0x1
+ 835 020a 3F01     		.2byte	0x13f
+ 836 020c 00000000 		.4byte	.LFB71
+ 837 0210 18000000 		.4byte	.LFE71-.LFB71
+ 838 0214 01       		.uleb128 0x1
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 23
+
+
+ 839 0215 9C       		.byte	0x9c
+ 840 0216 14       		.uleb128 0x14
+ 841 0217 98030000 		.4byte	.LASF44
+ 842 021b 01       		.byte	0x1
+ 843 021c 5401     		.2byte	0x154
+ 844 021e 9D000000 		.4byte	0x9d
+ 845 0222 00000000 		.4byte	.LFB72
+ 846 0226 1C000000 		.4byte	.LFE72-.LFB72
+ 847 022a 01       		.uleb128 0x1
+ 848 022b 9C       		.byte	0x9c
+ 849 022c 13       		.uleb128 0x13
+ 850 022d B7020000 		.4byte	.LASF34
+ 851 0231 01       		.byte	0x1
+ 852 0232 6901     		.2byte	0x169
+ 853 0234 00000000 		.4byte	.LFB73
+ 854 0238 18000000 		.4byte	.LFE73-.LFB73
+ 855 023c 01       		.uleb128 0x1
+ 856 023d 9C       		.byte	0x9c
+ 857 023e 13       		.uleb128 0x13
+ 858 023f 63030000 		.4byte	.LASF35
+ 859 0243 01       		.byte	0x1
+ 860 0244 8401     		.2byte	0x184
+ 861 0246 00000000 		.4byte	.LFB74
+ 862 024a 18000000 		.4byte	.LFE74-.LFB74
+ 863 024e 01       		.uleb128 0x1
+ 864 024f 9C       		.byte	0x9c
+ 865 0250 13       		.uleb128 0x13
+ 866 0251 2A030000 		.4byte	.LASF36
+ 867 0255 01       		.byte	0x1
+ 868 0256 9D01     		.2byte	0x19d
+ 869 0258 00000000 		.4byte	.LFB75
+ 870 025c 18000000 		.4byte	.LFE75-.LFB75
+ 871 0260 01       		.uleb128 0x1
+ 872 0261 9C       		.byte	0x9c
+ 873 0262 15       		.uleb128 0x15
+ 874 0263 F2010000 		.4byte	.LASF37
+ 875 0267 05       		.byte	0x5
+ 876 0268 1207     		.2byte	0x712
+ 877 026a 6E020000 		.4byte	0x26e
+ 878 026e 08       		.uleb128 0x8
+ 879 026f 92000000 		.4byte	0x92
+ 880 0273 16       		.uleb128 0x16
+ 881 0274 06020000 		.4byte	.LASF38
+ 882 0278 01       		.byte	0x1
+ 883 0279 24       		.byte	0x24
+ 884 027a 7E020000 		.4byte	0x27e
+ 885 027e 08       		.uleb128 0x8
+ 886 027f C3000000 		.4byte	0xc3
+ 887 0283 16       		.uleb128 0x16
+ 888 0284 E3020000 		.4byte	.LASF39
+ 889 0288 01       		.byte	0x1
+ 890 0289 25       		.byte	0x25
+ 891 028a EC000000 		.4byte	0xec
+ 892 028e 16       		.uleb128 0x16
+ 893 028f 64020000 		.4byte	.LASF40
+ 894 0293 01       		.byte	0x1
+ 895 0294 26       		.byte	0x26
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 24
+
+
+ 896 0295 DB000000 		.4byte	0xdb
+ 897 0299 00       		.byte	0
+ 898              		.section	.debug_abbrev,"",%progbits
+ 899              	.Ldebug_abbrev0:
+ 900 0000 01       		.uleb128 0x1
+ 901 0001 11       		.uleb128 0x11
+ 902 0002 01       		.byte	0x1
+ 903 0003 25       		.uleb128 0x25
+ 904 0004 0E       		.uleb128 0xe
+ 905 0005 13       		.uleb128 0x13
+ 906 0006 0B       		.uleb128 0xb
+ 907 0007 03       		.uleb128 0x3
+ 908 0008 0E       		.uleb128 0xe
+ 909 0009 1B       		.uleb128 0x1b
+ 910 000a 0E       		.uleb128 0xe
+ 911 000b 55       		.uleb128 0x55
+ 912 000c 17       		.uleb128 0x17
+ 913 000d 11       		.uleb128 0x11
+ 914 000e 01       		.uleb128 0x1
+ 915 000f 10       		.uleb128 0x10
+ 916 0010 17       		.uleb128 0x17
+ 917 0011 00       		.byte	0
+ 918 0012 00       		.byte	0
+ 919 0013 02       		.uleb128 0x2
+ 920 0014 24       		.uleb128 0x24
+ 921 0015 00       		.byte	0
+ 922 0016 0B       		.uleb128 0xb
+ 923 0017 0B       		.uleb128 0xb
+ 924 0018 3E       		.uleb128 0x3e
+ 925 0019 0B       		.uleb128 0xb
+ 926 001a 03       		.uleb128 0x3
+ 927 001b 08       		.uleb128 0x8
+ 928 001c 00       		.byte	0
+ 929 001d 00       		.byte	0
+ 930 001e 03       		.uleb128 0x3
+ 931 001f 24       		.uleb128 0x24
+ 932 0020 00       		.byte	0
+ 933 0021 0B       		.uleb128 0xb
+ 934 0022 0B       		.uleb128 0xb
+ 935 0023 3E       		.uleb128 0x3e
+ 936 0024 0B       		.uleb128 0xb
+ 937 0025 03       		.uleb128 0x3
+ 938 0026 0E       		.uleb128 0xe
+ 939 0027 00       		.byte	0
+ 940 0028 00       		.byte	0
+ 941 0029 04       		.uleb128 0x4
+ 942 002a 16       		.uleb128 0x16
+ 943 002b 00       		.byte	0
+ 944 002c 03       		.uleb128 0x3
+ 945 002d 0E       		.uleb128 0xe
+ 946 002e 3A       		.uleb128 0x3a
+ 947 002f 0B       		.uleb128 0xb
+ 948 0030 3B       		.uleb128 0x3b
+ 949 0031 0B       		.uleb128 0xb
+ 950 0032 49       		.uleb128 0x49
+ 951 0033 13       		.uleb128 0x13
+ 952 0034 00       		.byte	0
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 25
+
+
+ 953 0035 00       		.byte	0
+ 954 0036 05       		.uleb128 0x5
+ 955 0037 0F       		.uleb128 0xf
+ 956 0038 00       		.byte	0
+ 957 0039 0B       		.uleb128 0xb
+ 958 003a 0B       		.uleb128 0xb
+ 959 003b 49       		.uleb128 0x49
+ 960 003c 13       		.uleb128 0x13
+ 961 003d 00       		.byte	0
+ 962 003e 00       		.byte	0
+ 963 003f 06       		.uleb128 0x6
+ 964 0040 15       		.uleb128 0x15
+ 965 0041 00       		.byte	0
+ 966 0042 27       		.uleb128 0x27
+ 967 0043 19       		.uleb128 0x19
+ 968 0044 00       		.byte	0
+ 969 0045 00       		.byte	0
+ 970 0046 07       		.uleb128 0x7
+ 971 0047 16       		.uleb128 0x16
+ 972 0048 00       		.byte	0
+ 973 0049 03       		.uleb128 0x3
+ 974 004a 0E       		.uleb128 0xe
+ 975 004b 3A       		.uleb128 0x3a
+ 976 004c 0B       		.uleb128 0xb
+ 977 004d 3B       		.uleb128 0x3b
+ 978 004e 05       		.uleb128 0x5
+ 979 004f 49       		.uleb128 0x49
+ 980 0050 13       		.uleb128 0x13
+ 981 0051 00       		.byte	0
+ 982 0052 00       		.byte	0
+ 983 0053 08       		.uleb128 0x8
+ 984 0054 35       		.uleb128 0x35
+ 985 0055 00       		.byte	0
+ 986 0056 49       		.uleb128 0x49
+ 987 0057 13       		.uleb128 0x13
+ 988 0058 00       		.byte	0
+ 989 0059 00       		.byte	0
+ 990 005a 09       		.uleb128 0x9
+ 991 005b 2E       		.uleb128 0x2e
+ 992 005c 00       		.byte	0
+ 993 005d 3F       		.uleb128 0x3f
+ 994 005e 19       		.uleb128 0x19
+ 995 005f 03       		.uleb128 0x3
+ 996 0060 0E       		.uleb128 0xe
+ 997 0061 3A       		.uleb128 0x3a
+ 998 0062 0B       		.uleb128 0xb
+ 999 0063 3B       		.uleb128 0x3b
+ 1000 0064 0B       		.uleb128 0xb
+ 1001 0065 27       		.uleb128 0x27
+ 1002 0066 19       		.uleb128 0x19
+ 1003 0067 11       		.uleb128 0x11
+ 1004 0068 01       		.uleb128 0x1
+ 1005 0069 12       		.uleb128 0x12
+ 1006 006a 06       		.uleb128 0x6
+ 1007 006b 40       		.uleb128 0x40
+ 1008 006c 18       		.uleb128 0x18
+ 1009 006d 9642     		.uleb128 0x2116
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 26
+
+
+ 1010 006f 19       		.uleb128 0x19
+ 1011 0070 00       		.byte	0
+ 1012 0071 00       		.byte	0
+ 1013 0072 0A       		.uleb128 0xa
+ 1014 0073 2E       		.uleb128 0x2e
+ 1015 0074 01       		.byte	0x1
+ 1016 0075 3F       		.uleb128 0x3f
+ 1017 0076 19       		.uleb128 0x19
+ 1018 0077 03       		.uleb128 0x3
+ 1019 0078 0E       		.uleb128 0xe
+ 1020 0079 3A       		.uleb128 0x3a
+ 1021 007a 0B       		.uleb128 0xb
+ 1022 007b 3B       		.uleb128 0x3b
+ 1023 007c 0B       		.uleb128 0xb
+ 1024 007d 27       		.uleb128 0x27
+ 1025 007e 19       		.uleb128 0x19
+ 1026 007f 11       		.uleb128 0x11
+ 1027 0080 01       		.uleb128 0x1
+ 1028 0081 12       		.uleb128 0x12
+ 1029 0082 06       		.uleb128 0x6
+ 1030 0083 40       		.uleb128 0x40
+ 1031 0084 18       		.uleb128 0x18
+ 1032 0085 9642     		.uleb128 0x2116
+ 1033 0087 19       		.uleb128 0x19
+ 1034 0088 01       		.uleb128 0x1
+ 1035 0089 13       		.uleb128 0x13
+ 1036 008a 00       		.byte	0
+ 1037 008b 00       		.byte	0
+ 1038 008c 0B       		.uleb128 0xb
+ 1039 008d 05       		.uleb128 0x5
+ 1040 008e 00       		.byte	0
+ 1041 008f 03       		.uleb128 0x3
+ 1042 0090 0E       		.uleb128 0xe
+ 1043 0091 3A       		.uleb128 0x3a
+ 1044 0092 0B       		.uleb128 0xb
+ 1045 0093 3B       		.uleb128 0x3b
+ 1046 0094 0B       		.uleb128 0xb
+ 1047 0095 49       		.uleb128 0x49
+ 1048 0096 13       		.uleb128 0x13
+ 1049 0097 02       		.uleb128 0x2
+ 1050 0098 18       		.uleb128 0x18
+ 1051 0099 00       		.byte	0
+ 1052 009a 00       		.byte	0
+ 1053 009b 0C       		.uleb128 0xc
+ 1054 009c 2E       		.uleb128 0x2e
+ 1055 009d 01       		.byte	0x1
+ 1056 009e 3F       		.uleb128 0x3f
+ 1057 009f 19       		.uleb128 0x19
+ 1058 00a0 03       		.uleb128 0x3
+ 1059 00a1 0E       		.uleb128 0xe
+ 1060 00a2 3A       		.uleb128 0x3a
+ 1061 00a3 0B       		.uleb128 0xb
+ 1062 00a4 3B       		.uleb128 0x3b
+ 1063 00a5 0B       		.uleb128 0xb
+ 1064 00a6 27       		.uleb128 0x27
+ 1065 00a7 19       		.uleb128 0x19
+ 1066 00a8 11       		.uleb128 0x11
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 27
+
+
+ 1067 00a9 01       		.uleb128 0x1
+ 1068 00aa 12       		.uleb128 0x12
+ 1069 00ab 06       		.uleb128 0x6
+ 1070 00ac 40       		.uleb128 0x40
+ 1071 00ad 18       		.uleb128 0x18
+ 1072 00ae 9742     		.uleb128 0x2117
+ 1073 00b0 19       		.uleb128 0x19
+ 1074 00b1 01       		.uleb128 0x1
+ 1075 00b2 13       		.uleb128 0x13
+ 1076 00b3 00       		.byte	0
+ 1077 00b4 00       		.byte	0
+ 1078 00b5 0D       		.uleb128 0xd
+ 1079 00b6 34       		.uleb128 0x34
+ 1080 00b7 00       		.byte	0
+ 1081 00b8 03       		.uleb128 0x3
+ 1082 00b9 0E       		.uleb128 0xe
+ 1083 00ba 3A       		.uleb128 0x3a
+ 1084 00bb 0B       		.uleb128 0xb
+ 1085 00bc 3B       		.uleb128 0x3b
+ 1086 00bd 0B       		.uleb128 0xb
+ 1087 00be 49       		.uleb128 0x49
+ 1088 00bf 13       		.uleb128 0x13
+ 1089 00c0 02       		.uleb128 0x2
+ 1090 00c1 18       		.uleb128 0x18
+ 1091 00c2 00       		.byte	0
+ 1092 00c3 00       		.byte	0
+ 1093 00c4 0E       		.uleb128 0xe
+ 1094 00c5 2E       		.uleb128 0x2e
+ 1095 00c6 01       		.byte	0x1
+ 1096 00c7 3F       		.uleb128 0x3f
+ 1097 00c8 19       		.uleb128 0x19
+ 1098 00c9 03       		.uleb128 0x3
+ 1099 00ca 0E       		.uleb128 0xe
+ 1100 00cb 3A       		.uleb128 0x3a
+ 1101 00cc 0B       		.uleb128 0xb
+ 1102 00cd 3B       		.uleb128 0x3b
+ 1103 00ce 0B       		.uleb128 0xb
+ 1104 00cf 27       		.uleb128 0x27
+ 1105 00d0 19       		.uleb128 0x19
+ 1106 00d1 49       		.uleb128 0x49
+ 1107 00d2 13       		.uleb128 0x13
+ 1108 00d3 11       		.uleb128 0x11
+ 1109 00d4 01       		.uleb128 0x1
+ 1110 00d5 12       		.uleb128 0x12
+ 1111 00d6 06       		.uleb128 0x6
+ 1112 00d7 40       		.uleb128 0x40
+ 1113 00d8 18       		.uleb128 0x18
+ 1114 00d9 9742     		.uleb128 0x2117
+ 1115 00db 19       		.uleb128 0x19
+ 1116 00dc 01       		.uleb128 0x1
+ 1117 00dd 13       		.uleb128 0x13
+ 1118 00de 00       		.byte	0
+ 1119 00df 00       		.byte	0
+ 1120 00e0 0F       		.uleb128 0xf
+ 1121 00e1 2E       		.uleb128 0x2e
+ 1122 00e2 01       		.byte	0x1
+ 1123 00e3 3F       		.uleb128 0x3f
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 28
+
+
+ 1124 00e4 19       		.uleb128 0x19
+ 1125 00e5 03       		.uleb128 0x3
+ 1126 00e6 0E       		.uleb128 0xe
+ 1127 00e7 3A       		.uleb128 0x3a
+ 1128 00e8 0B       		.uleb128 0xb
+ 1129 00e9 3B       		.uleb128 0x3b
+ 1130 00ea 05       		.uleb128 0x5
+ 1131 00eb 27       		.uleb128 0x27
+ 1132 00ec 19       		.uleb128 0x19
+ 1133 00ed 11       		.uleb128 0x11
+ 1134 00ee 01       		.uleb128 0x1
+ 1135 00ef 12       		.uleb128 0x12
+ 1136 00f0 06       		.uleb128 0x6
+ 1137 00f1 40       		.uleb128 0x40
+ 1138 00f2 18       		.uleb128 0x18
+ 1139 00f3 9742     		.uleb128 0x2117
+ 1140 00f5 19       		.uleb128 0x19
+ 1141 00f6 01       		.uleb128 0x1
+ 1142 00f7 13       		.uleb128 0x13
+ 1143 00f8 00       		.byte	0
+ 1144 00f9 00       		.byte	0
+ 1145 00fa 10       		.uleb128 0x10
+ 1146 00fb 05       		.uleb128 0x5
+ 1147 00fc 00       		.byte	0
+ 1148 00fd 03       		.uleb128 0x3
+ 1149 00fe 0E       		.uleb128 0xe
+ 1150 00ff 3A       		.uleb128 0x3a
+ 1151 0100 0B       		.uleb128 0xb
+ 1152 0101 3B       		.uleb128 0x3b
+ 1153 0102 05       		.uleb128 0x5
+ 1154 0103 49       		.uleb128 0x49
+ 1155 0104 13       		.uleb128 0x13
+ 1156 0105 02       		.uleb128 0x2
+ 1157 0106 18       		.uleb128 0x18
+ 1158 0107 00       		.byte	0
+ 1159 0108 00       		.byte	0
+ 1160 0109 11       		.uleb128 0x11
+ 1161 010a 2E       		.uleb128 0x2e
+ 1162 010b 01       		.byte	0x1
+ 1163 010c 3F       		.uleb128 0x3f
+ 1164 010d 19       		.uleb128 0x19
+ 1165 010e 03       		.uleb128 0x3
+ 1166 010f 0E       		.uleb128 0xe
+ 1167 0110 3A       		.uleb128 0x3a
+ 1168 0111 0B       		.uleb128 0xb
+ 1169 0112 3B       		.uleb128 0x3b
+ 1170 0113 05       		.uleb128 0x5
+ 1171 0114 27       		.uleb128 0x27
+ 1172 0115 19       		.uleb128 0x19
+ 1173 0116 49       		.uleb128 0x49
+ 1174 0117 13       		.uleb128 0x13
+ 1175 0118 11       		.uleb128 0x11
+ 1176 0119 01       		.uleb128 0x1
+ 1177 011a 12       		.uleb128 0x12
+ 1178 011b 06       		.uleb128 0x6
+ 1179 011c 40       		.uleb128 0x40
+ 1180 011d 18       		.uleb128 0x18
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 29
+
+
+ 1181 011e 9742     		.uleb128 0x2117
+ 1182 0120 19       		.uleb128 0x19
+ 1183 0121 01       		.uleb128 0x1
+ 1184 0122 13       		.uleb128 0x13
+ 1185 0123 00       		.byte	0
+ 1186 0124 00       		.byte	0
+ 1187 0125 12       		.uleb128 0x12
+ 1188 0126 34       		.uleb128 0x34
+ 1189 0127 00       		.byte	0
+ 1190 0128 03       		.uleb128 0x3
+ 1191 0129 0E       		.uleb128 0xe
+ 1192 012a 3A       		.uleb128 0x3a
+ 1193 012b 0B       		.uleb128 0xb
+ 1194 012c 3B       		.uleb128 0x3b
+ 1195 012d 05       		.uleb128 0x5
+ 1196 012e 49       		.uleb128 0x49
+ 1197 012f 13       		.uleb128 0x13
+ 1198 0130 02       		.uleb128 0x2
+ 1199 0131 18       		.uleb128 0x18
+ 1200 0132 00       		.byte	0
+ 1201 0133 00       		.byte	0
+ 1202 0134 13       		.uleb128 0x13
+ 1203 0135 2E       		.uleb128 0x2e
+ 1204 0136 00       		.byte	0
+ 1205 0137 3F       		.uleb128 0x3f
+ 1206 0138 19       		.uleb128 0x19
+ 1207 0139 03       		.uleb128 0x3
+ 1208 013a 0E       		.uleb128 0xe
+ 1209 013b 3A       		.uleb128 0x3a
+ 1210 013c 0B       		.uleb128 0xb
+ 1211 013d 3B       		.uleb128 0x3b
+ 1212 013e 05       		.uleb128 0x5
+ 1213 013f 27       		.uleb128 0x27
+ 1214 0140 19       		.uleb128 0x19
+ 1215 0141 11       		.uleb128 0x11
+ 1216 0142 01       		.uleb128 0x1
+ 1217 0143 12       		.uleb128 0x12
+ 1218 0144 06       		.uleb128 0x6
+ 1219 0145 40       		.uleb128 0x40
+ 1220 0146 18       		.uleb128 0x18
+ 1221 0147 9742     		.uleb128 0x2117
+ 1222 0149 19       		.uleb128 0x19
+ 1223 014a 00       		.byte	0
+ 1224 014b 00       		.byte	0
+ 1225 014c 14       		.uleb128 0x14
+ 1226 014d 2E       		.uleb128 0x2e
+ 1227 014e 00       		.byte	0
+ 1228 014f 3F       		.uleb128 0x3f
+ 1229 0150 19       		.uleb128 0x19
+ 1230 0151 03       		.uleb128 0x3
+ 1231 0152 0E       		.uleb128 0xe
+ 1232 0153 3A       		.uleb128 0x3a
+ 1233 0154 0B       		.uleb128 0xb
+ 1234 0155 3B       		.uleb128 0x3b
+ 1235 0156 05       		.uleb128 0x5
+ 1236 0157 27       		.uleb128 0x27
+ 1237 0158 19       		.uleb128 0x19
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 30
+
+
+ 1238 0159 49       		.uleb128 0x49
+ 1239 015a 13       		.uleb128 0x13
+ 1240 015b 11       		.uleb128 0x11
+ 1241 015c 01       		.uleb128 0x1
+ 1242 015d 12       		.uleb128 0x12
+ 1243 015e 06       		.uleb128 0x6
+ 1244 015f 40       		.uleb128 0x40
+ 1245 0160 18       		.uleb128 0x18
+ 1246 0161 9742     		.uleb128 0x2117
+ 1247 0163 19       		.uleb128 0x19
+ 1248 0164 00       		.byte	0
+ 1249 0165 00       		.byte	0
+ 1250 0166 15       		.uleb128 0x15
+ 1251 0167 34       		.uleb128 0x34
+ 1252 0168 00       		.byte	0
+ 1253 0169 03       		.uleb128 0x3
+ 1254 016a 0E       		.uleb128 0xe
+ 1255 016b 3A       		.uleb128 0x3a
+ 1256 016c 0B       		.uleb128 0xb
+ 1257 016d 3B       		.uleb128 0x3b
+ 1258 016e 05       		.uleb128 0x5
+ 1259 016f 49       		.uleb128 0x49
+ 1260 0170 13       		.uleb128 0x13
+ 1261 0171 3F       		.uleb128 0x3f
+ 1262 0172 19       		.uleb128 0x19
+ 1263 0173 3C       		.uleb128 0x3c
+ 1264 0174 19       		.uleb128 0x19
+ 1265 0175 00       		.byte	0
+ 1266 0176 00       		.byte	0
+ 1267 0177 16       		.uleb128 0x16
+ 1268 0178 34       		.uleb128 0x34
+ 1269 0179 00       		.byte	0
+ 1270 017a 03       		.uleb128 0x3
+ 1271 017b 0E       		.uleb128 0xe
+ 1272 017c 3A       		.uleb128 0x3a
+ 1273 017d 0B       		.uleb128 0xb
+ 1274 017e 3B       		.uleb128 0x3b
+ 1275 017f 0B       		.uleb128 0xb
+ 1276 0180 49       		.uleb128 0x49
+ 1277 0181 13       		.uleb128 0x13
+ 1278 0182 3F       		.uleb128 0x3f
+ 1279 0183 19       		.uleb128 0x19
+ 1280 0184 3C       		.uleb128 0x3c
+ 1281 0185 19       		.uleb128 0x19
+ 1282 0186 00       		.byte	0
+ 1283 0187 00       		.byte	0
+ 1284 0188 00       		.byte	0
+ 1285              		.section	.debug_aranges,"",%progbits
+ 1286 0000 7C000000 		.4byte	0x7c
+ 1287 0004 0200     		.2byte	0x2
+ 1288 0006 00000000 		.4byte	.Ldebug_info0
+ 1289 000a 04       		.byte	0x4
+ 1290 000b 00       		.byte	0
+ 1291 000c 0000     		.2byte	0
+ 1292 000e 0000     		.2byte	0
+ 1293 0010 00000000 		.4byte	.LFB63
+ 1294 0014 20000000 		.4byte	.LFE63-.LFB63
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 31
+
+
+ 1295 0018 00000000 		.4byte	.LFB64
+ 1296 001c 24000000 		.4byte	.LFE64-.LFB64
+ 1297 0020 00000000 		.4byte	.LFB65
+ 1298 0024 18000000 		.4byte	.LFE65-.LFB65
+ 1299 0028 00000000 		.4byte	.LFB66
+ 1300 002c 48000000 		.4byte	.LFE66-.LFB66
+ 1301 0030 00000000 		.4byte	.LFB67
+ 1302 0034 24000000 		.4byte	.LFE67-.LFB67
+ 1303 0038 00000000 		.4byte	.LFB68
+ 1304 003c 20000000 		.4byte	.LFE68-.LFB68
+ 1305 0040 00000000 		.4byte	.LFB69
+ 1306 0044 24000000 		.4byte	.LFE69-.LFB69
+ 1307 0048 00000000 		.4byte	.LFB70
+ 1308 004c 20000000 		.4byte	.LFE70-.LFB70
+ 1309 0050 00000000 		.4byte	.LFB71
+ 1310 0054 18000000 		.4byte	.LFE71-.LFB71
+ 1311 0058 00000000 		.4byte	.LFB72
+ 1312 005c 1C000000 		.4byte	.LFE72-.LFB72
+ 1313 0060 00000000 		.4byte	.LFB73
+ 1314 0064 18000000 		.4byte	.LFE73-.LFB73
+ 1315 0068 00000000 		.4byte	.LFB74
+ 1316 006c 18000000 		.4byte	.LFE74-.LFB74
+ 1317 0070 00000000 		.4byte	.LFB75
+ 1318 0074 18000000 		.4byte	.LFE75-.LFB75
+ 1319 0078 00000000 		.4byte	0
+ 1320 007c 00000000 		.4byte	0
+ 1321              		.section	.debug_ranges,"",%progbits
+ 1322              	.Ldebug_ranges0:
+ 1323 0000 00000000 		.4byte	.LFB63
+ 1324 0004 20000000 		.4byte	.LFE63
+ 1325 0008 00000000 		.4byte	.LFB64
+ 1326 000c 24000000 		.4byte	.LFE64
+ 1327 0010 00000000 		.4byte	.LFB65
+ 1328 0014 18000000 		.4byte	.LFE65
+ 1329 0018 00000000 		.4byte	.LFB66
+ 1330 001c 48000000 		.4byte	.LFE66
+ 1331 0020 00000000 		.4byte	.LFB67
+ 1332 0024 24000000 		.4byte	.LFE67
+ 1333 0028 00000000 		.4byte	.LFB68
+ 1334 002c 20000000 		.4byte	.LFE68
+ 1335 0030 00000000 		.4byte	.LFB69
+ 1336 0034 24000000 		.4byte	.LFE69
+ 1337 0038 00000000 		.4byte	.LFB70
+ 1338 003c 20000000 		.4byte	.LFE70
+ 1339 0040 00000000 		.4byte	.LFB71
+ 1340 0044 18000000 		.4byte	.LFE71
+ 1341 0048 00000000 		.4byte	.LFB72
+ 1342 004c 1C000000 		.4byte	.LFE72
+ 1343 0050 00000000 		.4byte	.LFB73
+ 1344 0054 18000000 		.4byte	.LFE73
+ 1345 0058 00000000 		.4byte	.LFB74
+ 1346 005c 18000000 		.4byte	.LFE74
+ 1347 0060 00000000 		.4byte	.LFB75
+ 1348 0064 18000000 		.4byte	.LFE75
+ 1349 0068 00000000 		.4byte	0
+ 1350 006c 00000000 		.4byte	0
+ 1351              		.section	.debug_line,"",%progbits
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 32
+
+
+ 1352              	.Ldebug_line0:
+ 1353 0000 55020000 		.section	.debug_str,"MS",%progbits,1
+ 1353      02005701 
+ 1353      00000201 
+ 1353      FB0E0D00 
+ 1353      01010101 
+ 1354              	.LASF26:
+ 1355 0000 6973725F 		.ascii	"isr_averageData_SetVector\000"
+ 1355      61766572 
+ 1355      61676544 
+ 1355      6174615F 
+ 1355      53657456 
+ 1356              	.LASF20:
+ 1357 001a 72656733 		.ascii	"reg32\000"
+ 1357      3200
+ 1358              	.LASF41:
+ 1359 0020 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1359      43313120 
+ 1359      352E342E 
+ 1359      31203230 
+ 1359      31363036 
+ 1360 0053 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 1360      20726576 
+ 1360      6973696F 
+ 1360      6E203233 
+ 1360      37373135 
+ 1361 0086 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 1361      66756E63 
+ 1361      74696F6E 
+ 1361      2D736563 
+ 1361      74696F6E 
+ 1362              	.LASF43:
+ 1363 00ae 433A5C55 		.ascii	"C:\\UserData\\z004c8dn\\OneDrive - Siemens AG\\Doku"
+ 1363      73657244 
+ 1363      6174615C 
+ 1363      7A303034 
+ 1363      6338646E 
+ 1364 00dd 6D656E74 		.ascii	"mente\\PSoC Creator\\AndreasBothPSoC5OneWire\\Andre"
+ 1364      655C5053 
+ 1364      6F432043 
+ 1364      72656174 
+ 1364      6F725C41 
+ 1365 010d 6173426F 		.ascii	"asBothPSoCOneWire.cydsn\000"
+ 1365      74685053 
+ 1365      6F434F6E 
+ 1365      65576972 
+ 1365      652E6379 
+ 1366              	.LASF12:
+ 1367 0125 5F5F696E 		.ascii	"__int32_t\000"
+ 1367      7433325F 
+ 1367      7400
+ 1368              	.LASF42:
+ 1369 012f 47656E65 		.ascii	"Generated_Source\\PSoC5\\isr_averageData.c\000"
+ 1369      72617465 
+ 1369      645F536F 
+ 1369      75726365 
+ 1369      5C50536F 
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 33
+
+
+ 1370              	.LASF33:
+ 1371 0158 6973725F 		.ascii	"isr_averageData_Enable\000"
+ 1371      61766572 
+ 1371      61676544 
+ 1371      6174615F 
+ 1371      456E6162 
+ 1372              	.LASF22:
+ 1373 016f 6973725F 		.ascii	"isr_averageData_Start\000"
+ 1373      61766572 
+ 1373      61676544 
+ 1373      6174615F 
+ 1373      53746172 
+ 1374              	.LASF16:
+ 1375 0185 666C6F61 		.ascii	"float\000"
+ 1375      7400
+ 1376              	.LASF1:
+ 1377 018b 6C6F6E67 		.ascii	"long long int\000"
+ 1377      206C6F6E 
+ 1377      6720696E 
+ 1377      7400
+ 1378              	.LASF4:
+ 1379 0199 756E7369 		.ascii	"unsigned char\000"
+ 1379      676E6564 
+ 1379      20636861 
+ 1379      7200
+ 1380              	.LASF19:
+ 1381 01a7 72656738 		.ascii	"reg8\000"
+ 1381      00
+ 1382              	.LASF8:
+ 1383 01ac 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1383      20756E73 
+ 1383      69676E65 
+ 1383      6420696E 
+ 1383      7400
+ 1384              	.LASF6:
+ 1385 01be 73686F72 		.ascii	"short unsigned int\000"
+ 1385      7420756E 
+ 1385      7369676E 
+ 1385      65642069 
+ 1385      6E7400
+ 1386              	.LASF18:
+ 1387 01d1 75696E74 		.ascii	"uint64\000"
+ 1387      363400
+ 1388              	.LASF24:
+ 1389 01d8 6973725F 		.ascii	"isr_averageData_Interrupt\000"
+ 1389      61766572 
+ 1389      61676544 
+ 1389      6174615F 
+ 1389      496E7465 
+ 1390              	.LASF37:
+ 1391 01f2 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 1391      52784275 
+ 1391      66666572 
+ 1391      00
+ 1392              	.LASF17:
+ 1393 01ff 646F7562 		.ascii	"double\000"
+ 1393      6C6500
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 34
+
+
+ 1394              	.LASF38:
+ 1395 0206 67496E70 		.ascii	"gInputSum\000"
+ 1395      75745375 
+ 1395      6D00
+ 1396              	.LASF30:
+ 1397 0210 7072696F 		.ascii	"priority\000"
+ 1397      72697479 
+ 1397      00
+ 1398              	.LASF15:
+ 1399 0219 75696E74 		.ascii	"uint32\000"
+ 1399      333200
+ 1400              	.LASF25:
+ 1401 0220 6973725F 		.ascii	"isr_averageData_StartEx\000"
+ 1401      61766572 
+ 1401      61676544 
+ 1401      6174615F 
+ 1401      53746172 
+ 1402              	.LASF0:
+ 1403 0238 756E7369 		.ascii	"unsigned int\000"
+ 1403      676E6564 
+ 1403      20696E74 
+ 1403      00
+ 1404              	.LASF27:
+ 1405 0245 61646472 		.ascii	"address\000"
+ 1405      65737300 
+ 1406              	.LASF9:
+ 1407 024d 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1407      206C6F6E 
+ 1407      6720756E 
+ 1407      7369676E 
+ 1407      65642069 
+ 1408              	.LASF40:
+ 1409 0264 6753656E 		.ascii	"gSendAverage\000"
+ 1409      64417665 
+ 1409      72616765 
+ 1409      00
+ 1410              	.LASF32:
+ 1411 0271 6973725F 		.ascii	"isr_averageData_GetPriority\000"
+ 1411      61766572 
+ 1411      61676544 
+ 1411      6174615F 
+ 1411      47657450 
+ 1412              	.LASF21:
+ 1413 028d 63796973 		.ascii	"cyisraddress\000"
+ 1413      72616464 
+ 1413      72657373 
+ 1413      00
+ 1414              	.LASF3:
+ 1415 029a 7369676E 		.ascii	"signed char\000"
+ 1415      65642063 
+ 1415      68617200 
+ 1416              	.LASF13:
+ 1417 02a6 696E7433 		.ascii	"int32_t\000"
+ 1417      325F7400 
+ 1418              	.LASF10:
+ 1419 02ae 73697A65 		.ascii	"sizetype\000"
+ 1419      74797065 
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 35
+
+
+ 1419      00
+ 1420              	.LASF34:
+ 1421 02b7 6973725F 		.ascii	"isr_averageData_Disable\000"
+ 1421      61766572 
+ 1421      61676544 
+ 1421      6174615F 
+ 1421      44697361 
+ 1422              	.LASF11:
+ 1423 02cf 63686172 		.ascii	"char\000"
+ 1423      00
+ 1424              	.LASF28:
+ 1425 02d4 72616D56 		.ascii	"ramVectorTable\000"
+ 1425      6563746F 
+ 1425      72546162 
+ 1425      6C6500
+ 1426              	.LASF39:
+ 1427 02e3 67417665 		.ascii	"gAverageData\000"
+ 1427      72616765 
+ 1427      44617461 
+ 1427      00
+ 1428              	.LASF5:
+ 1429 02f0 73686F72 		.ascii	"short int\000"
+ 1429      7420696E 
+ 1429      7400
+ 1430              	.LASF14:
+ 1431 02fa 75696E74 		.ascii	"uint8\000"
+ 1431      3800
+ 1432              	.LASF7:
+ 1433 0300 6C6F6E67 		.ascii	"long int\000"
+ 1433      20696E74 
+ 1433      00
+ 1434              	.LASF23:
+ 1435 0309 6973725F 		.ascii	"isr_averageData_Stop\000"
+ 1435      61766572 
+ 1435      61676544 
+ 1435      6174615F 
+ 1435      53746F70 
+ 1436              	.LASF2:
+ 1437 031e 6C6F6E67 		.ascii	"long double\000"
+ 1437      20646F75 
+ 1437      626C6500 
+ 1438              	.LASF36:
+ 1439 032a 6973725F 		.ascii	"isr_averageData_ClearPending\000"
+ 1439      61766572 
+ 1439      61676544 
+ 1439      6174615F 
+ 1439      436C6561 
+ 1440              	.LASF29:
+ 1441 0347 6973725F 		.ascii	"isr_averageData_SetPriority\000"
+ 1441      61766572 
+ 1441      61676544 
+ 1441      6174615F 
+ 1441      53657450 
+ 1442              	.LASF35:
+ 1443 0363 6973725F 		.ascii	"isr_averageData_SetPending\000"
+ 1443      61766572 
+ 1443      61676544 
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccGHEz8a.s 			page 36
+
+
+ 1443      6174615F 
+ 1443      53657450 
+ 1444              	.LASF31:
+ 1445 037e 6973725F 		.ascii	"isr_averageData_GetVector\000"
+ 1445      61766572 
+ 1445      61676544 
+ 1445      6174615F 
+ 1445      47657456 
+ 1446              	.LASF44:
+ 1447 0398 6973725F 		.ascii	"isr_averageData_GetState\000"
+ 1447      61766572 
+ 1447      61676544 
+ 1447      6174615F 
+ 1447      47657453 
+ 1448              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran

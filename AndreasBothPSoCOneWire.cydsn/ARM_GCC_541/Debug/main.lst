@@ -1,0 +1,1738 @@
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.OneWireReset,"ax",%progbits
+  20              		.align	2
+  21              		.global	OneWireReset
+  22              		.thumb
+  23              		.thumb_func
+  24              		.type	OneWireReset, %function
+  25              	OneWireReset:
+  26              	.LFB63:
+  27              		.file 1 "OneWire.c"
+   1:OneWire.c     **** /* ========================================
+   2:OneWire.c     ****  *File Name: OneWire.c
+   3:OneWire.c     ****  * 
+   4:OneWire.c     ****  * AUTHOR: Andreas BOTH
+   5:OneWire.c     ****  * DATE: 2024-04-19
+   6:OneWire.c     ****  * COURSE: tx00db04
+   7:OneWire.c     ****  * Description: Defines functions to communicate to a OneWire device.
+   8:OneWire.c     ****  *
+   9:OneWire.c     ****  * ========================================
+  10:OneWire.c     **** */
+  11:OneWire.c     **** #include "project.h"
+  12:OneWire.c     **** #include "OneWire.h"
+  13:OneWire.c     **** #define MSB_OF_BYTE 0x80
+  14:OneWire.c     **** #define LSB_Of_BYTE 0x01
+  15:OneWire.c     **** 
+  16:OneWire.c     **** 
+  17:OneWire.c     **** /*Generates Init Pulse with the necessary delays*/
+  18:OneWire.c     **** int OneWireReset()                  //init. pulse generation
+  19:OneWire.c     **** {
+  28              		.loc 1 19 0
+  29              		.cfi_startproc
+  30              		@ args = 0, pretend = 0, frame = 8
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32 0000 80B5     		push	{r7, lr}
+  33              		.cfi_def_cfa_offset 8
+  34              		.cfi_offset 7, -8
+  35              		.cfi_offset 14, -4
+  36 0002 82B0     		sub	sp, sp, #8
+  37              		.cfi_def_cfa_offset 16
+  38 0004 00AF     		add	r7, sp, #0
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 2
+
+
+  39              		.cfi_def_cfa_register 7
+  20:OneWire.c     ****     int result;
+  21:OneWire.c     ****     
+  22:OneWire.c     ****     CyDelayUs(ONE_WIRE_DELAY_G);    //0us delay (compatibility with other drive mode, not implement
+  40              		.loc 1 22 0
+  41 0006 0020     		movs	r0, #0
+  42 0008 FFF7FEFF 		bl	CyDelayUs
+  23:OneWire.c     ****     OneWire_Write(LOW);             
+  43              		.loc 1 23 0
+  44 000c 0020     		movs	r0, #0
+  45 000e FFF7FEFF 		bl	OneWire_Write
+  24:OneWire.c     ****     CyDelayUs(ONE_WIRE_DELAY_H);    //480us delay
+  46              		.loc 1 24 0
+  47 0012 4FF4F070 		mov	r0, #480
+  48 0016 FFF7FEFF 		bl	CyDelayUs
+  25:OneWire.c     ****     OneWire_Write(HIGH);
+  49              		.loc 1 25 0
+  50 001a 0120     		movs	r0, #1
+  51 001c FFF7FEFF 		bl	OneWire_Write
+  26:OneWire.c     ****     CyDelayUs(ONE_WIRE_DELAY_I);    //70us  delay
+  52              		.loc 1 26 0
+  53 0020 4620     		movs	r0, #70
+  54 0022 FFF7FEFF 		bl	CyDelayUs
+  27:OneWire.c     ****     result = OneWire_Read()^0x01;   //check for presence pulse of slave device
+  55              		.loc 1 27 0
+  56 0026 FFF7FEFF 		bl	OneWire_Read
+  57 002a 0346     		mov	r3, r0
+  58 002c 83F00103 		eor	r3, r3, #1
+  59 0030 DBB2     		uxtb	r3, r3
+  60 0032 7B60     		str	r3, [r7, #4]
+  28:OneWire.c     ****     CyDelayUs(ONE_WIRE_DELAY_J);    //410us delay
+  61              		.loc 1 28 0
+  62 0034 4FF4CD70 		mov	r0, #410
+  63 0038 FFF7FEFF 		bl	CyDelayUs
+  29:OneWire.c     ****   
+  30:OneWire.c     ****     return result;
+  64              		.loc 1 30 0
+  65 003c 7B68     		ldr	r3, [r7, #4]
+  31:OneWire.c     **** }
+  66              		.loc 1 31 0
+  67 003e 1846     		mov	r0, r3
+  68 0040 0837     		adds	r7, r7, #8
+  69              		.cfi_def_cfa_offset 8
+  70 0042 BD46     		mov	sp, r7
+  71              		.cfi_def_cfa_register 13
+  72              		@ sp needed
+  73 0044 80BD     		pop	{r7, pc}
+  74              		.cfi_endproc
+  75              	.LFE63:
+  76              		.size	OneWireReset, .-OneWireReset
+  77 0046 00BF     		.section	.text.OneWireWriteBit,"ax",%progbits
+  78              		.align	2
+  79              		.global	OneWireWriteBit
+  80              		.thumb
+  81              		.thumb_func
+  82              		.type	OneWireWriteBit, %function
+  83              	OneWireWriteBit:
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 3
+
+
+  84              	.LFB64:
+  32:OneWire.c     **** 
+  33:OneWire.c     **** /*Generates pulse for write function on bus LOGIC ONE or ZERO*/
+  34:OneWire.c     **** void OneWireWriteBit(uint8 bit)
+  35:OneWire.c     **** {
+  85              		.loc 1 35 0
+  86              		.cfi_startproc
+  87              		@ args = 0, pretend = 0, frame = 8
+  88              		@ frame_needed = 1, uses_anonymous_args = 0
+  89 0000 80B5     		push	{r7, lr}
+  90              		.cfi_def_cfa_offset 8
+  91              		.cfi_offset 7, -8
+  92              		.cfi_offset 14, -4
+  93 0002 82B0     		sub	sp, sp, #8
+  94              		.cfi_def_cfa_offset 16
+  95 0004 00AF     		add	r7, sp, #0
+  96              		.cfi_def_cfa_register 7
+  97 0006 0346     		mov	r3, r0
+  98 0008 FB71     		strb	r3, [r7, #7]
+  36:OneWire.c     ****     OneWire_Write(LOW);
+  99              		.loc 1 36 0
+ 100 000a 0020     		movs	r0, #0
+ 101 000c FFF7FEFF 		bl	OneWire_Write
+  37:OneWire.c     ****     if(bit)
+ 102              		.loc 1 37 0
+ 103 0010 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 104 0012 002B     		cmp	r3, #0
+ 105 0014 09D0     		beq	.L4
+  38:OneWire.c     ****     {
+  39:OneWire.c     ****         /*Case Logic 1*/
+  40:OneWire.c     ****         CyDelayUs(ONE_WIRE_DELAY_A);    //6us delay
+ 106              		.loc 1 40 0
+ 107 0016 0620     		movs	r0, #6
+ 108 0018 FFF7FEFF 		bl	CyDelayUs
+  41:OneWire.c     ****         OneWire_Write(HIGH);
+ 109              		.loc 1 41 0
+ 110 001c 0120     		movs	r0, #1
+ 111 001e FFF7FEFF 		bl	OneWire_Write
+  42:OneWire.c     ****         CyDelayUs(ONE_WIRE_DELAY_B);    //64us delay
+ 112              		.loc 1 42 0
+ 113 0022 4020     		movs	r0, #64
+ 114 0024 FFF7FEFF 		bl	CyDelayUs
+  43:OneWire.c     ****     } 
+  44:OneWire.c     ****     else
+  45:OneWire.c     ****     {
+  46:OneWire.c     ****         /*Case Logic 0*/
+  47:OneWire.c     ****         CyDelayUs(ONE_WIRE_DELAY_C);    //60us delay
+  48:OneWire.c     ****         OneWire_Write(HIGH);
+  49:OneWire.c     ****         CyDelayUs(ONE_WIRE_DELAY_D);    //10us delay
+  50:OneWire.c     ****     }
+  51:OneWire.c     **** }
+ 115              		.loc 1 51 0
+ 116 0028 08E0     		b	.L6
+ 117              	.L4:
+  47:OneWire.c     ****         OneWire_Write(HIGH);
+ 118              		.loc 1 47 0
+ 119 002a 3C20     		movs	r0, #60
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 4
+
+
+ 120 002c FFF7FEFF 		bl	CyDelayUs
+  48:OneWire.c     ****         CyDelayUs(ONE_WIRE_DELAY_D);    //10us delay
+ 121              		.loc 1 48 0
+ 122 0030 0120     		movs	r0, #1
+ 123 0032 FFF7FEFF 		bl	OneWire_Write
+  49:OneWire.c     ****     }
+ 124              		.loc 1 49 0
+ 125 0036 0A20     		movs	r0, #10
+ 126 0038 FFF7FEFF 		bl	CyDelayUs
+ 127              	.L6:
+ 128              		.loc 1 51 0
+ 129 003c 00BF     		nop
+ 130 003e 0837     		adds	r7, r7, #8
+ 131              		.cfi_def_cfa_offset 8
+ 132 0040 BD46     		mov	sp, r7
+ 133              		.cfi_def_cfa_register 13
+ 134              		@ sp needed
+ 135 0042 80BD     		pop	{r7, pc}
+ 136              		.cfi_endproc
+ 137              	.LFE64:
+ 138              		.size	OneWireWriteBit, .-OneWireWriteBit
+ 139              		.section	.text.OneWireWriteByte,"ax",%progbits
+ 140              		.align	2
+ 141              		.global	OneWireWriteByte
+ 142              		.thumb
+ 143              		.thumb_func
+ 144              		.type	OneWireWriteByte, %function
+ 145              	OneWireWriteByte:
+ 146              	.LFB65:
+  52:OneWire.c     **** 
+  53:OneWire.c     **** /*Writes entire byte to bus*/
+  54:OneWire.c     **** void OneWireWriteByte(uint8 byte)
+  55:OneWire.c     **** {
+ 147              		.loc 1 55 0
+ 148              		.cfi_startproc
+ 149              		@ args = 0, pretend = 0, frame = 16
+ 150              		@ frame_needed = 1, uses_anonymous_args = 0
+ 151 0000 80B5     		push	{r7, lr}
+ 152              		.cfi_def_cfa_offset 8
+ 153              		.cfi_offset 7, -8
+ 154              		.cfi_offset 14, -4
+ 155 0002 84B0     		sub	sp, sp, #16
+ 156              		.cfi_def_cfa_offset 24
+ 157 0004 00AF     		add	r7, sp, #0
+ 158              		.cfi_def_cfa_register 7
+ 159 0006 0346     		mov	r3, r0
+ 160 0008 FB71     		strb	r3, [r7, #7]
+ 161              	.LBB2:
+  56:OneWire.c     ****     for(int n=0;n<8;n++)
+ 162              		.loc 1 56 0
+ 163 000a 0023     		movs	r3, #0
+ 164 000c FB60     		str	r3, [r7, #12]
+ 165 000e 0DE0     		b	.L8
+ 166              	.L9:
+  57:OneWire.c     ****     {
+  58:OneWire.c     ****         OneWireWriteBit((byte >> n) & LSB_Of_BYTE);    //shift each iteration and only send last bi
+ 167              		.loc 1 58 0 discriminator 3
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 5
+
+
+ 168 0010 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 169 0012 FB68     		ldr	r3, [r7, #12]
+ 170 0014 42FA03F3 		asr	r3, r2, r3
+ 171 0018 DBB2     		uxtb	r3, r3
+ 172 001a 03F00103 		and	r3, r3, #1
+ 173 001e DBB2     		uxtb	r3, r3
+ 174 0020 1846     		mov	r0, r3
+ 175 0022 FFF7FEFF 		bl	OneWireWriteBit
+  56:OneWire.c     ****     for(int n=0;n<8;n++)
+ 176              		.loc 1 56 0 discriminator 3
+ 177 0026 FB68     		ldr	r3, [r7, #12]
+ 178 0028 0133     		adds	r3, r3, #1
+ 179 002a FB60     		str	r3, [r7, #12]
+ 180              	.L8:
+  56:OneWire.c     ****     for(int n=0;n<8;n++)
+ 181              		.loc 1 56 0 is_stmt 0 discriminator 1
+ 182 002c FB68     		ldr	r3, [r7, #12]
+ 183 002e 072B     		cmp	r3, #7
+ 184 0030 EEDD     		ble	.L9
+ 185              	.LBE2:
+  59:OneWire.c     ****     }
+  60:OneWire.c     **** }
+ 186              		.loc 1 60 0 is_stmt 1
+ 187 0032 00BF     		nop
+ 188 0034 1037     		adds	r7, r7, #16
+ 189              		.cfi_def_cfa_offset 8
+ 190 0036 BD46     		mov	sp, r7
+ 191              		.cfi_def_cfa_register 13
+ 192              		@ sp needed
+ 193 0038 80BD     		pop	{r7, pc}
+ 194              		.cfi_endproc
+ 195              	.LFE65:
+ 196              		.size	OneWireWriteByte, .-OneWireWriteByte
+ 197 003a 00BF     		.section	.text.OneWireReadBit,"ax",%progbits
+ 198              		.align	2
+ 199              		.global	OneWireReadBit
+ 200              		.thumb
+ 201              		.thumb_func
+ 202              		.type	OneWireReadBit, %function
+ 203              	OneWireReadBit:
+ 204              	.LFB66:
+  61:OneWire.c     **** 
+  62:OneWire.c     **** 
+  63:OneWire.c     **** /*Genereates READ pulse for Bus system*/
+  64:OneWire.c     **** uint8 OneWireReadBit()
+  65:OneWire.c     **** {
+ 205              		.loc 1 65 0
+ 206              		.cfi_startproc
+ 207              		@ args = 0, pretend = 0, frame = 8
+ 208              		@ frame_needed = 1, uses_anonymous_args = 0
+ 209 0000 80B5     		push	{r7, lr}
+ 210              		.cfi_def_cfa_offset 8
+ 211              		.cfi_offset 7, -8
+ 212              		.cfi_offset 14, -4
+ 213 0002 82B0     		sub	sp, sp, #8
+ 214              		.cfi_def_cfa_offset 16
+ 215 0004 00AF     		add	r7, sp, #0
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 6
+
+
+ 216              		.cfi_def_cfa_register 7
+  66:OneWire.c     ****     uint8 result;
+  67:OneWire.c     ****     OneWire_Write(LOW);
+ 217              		.loc 1 67 0
+ 218 0006 0020     		movs	r0, #0
+ 219 0008 FFF7FEFF 		bl	OneWire_Write
+  68:OneWire.c     ****     CyDelayUs(ONE_WIRE_DELAY_A);    //6us delay
+ 220              		.loc 1 68 0
+ 221 000c 0620     		movs	r0, #6
+ 222 000e FFF7FEFF 		bl	CyDelayUs
+  69:OneWire.c     ****     OneWire_Write(HIGH);
+ 223              		.loc 1 69 0
+ 224 0012 0120     		movs	r0, #1
+ 225 0014 FFF7FEFF 		bl	OneWire_Write
+  70:OneWire.c     ****     CyDelayUs(ONE_WIRE_DELAY_E);    //9us delay   
+ 226              		.loc 1 70 0
+ 227 0018 0920     		movs	r0, #9
+ 228 001a FFF7FEFF 		bl	CyDelayUs
+  71:OneWire.c     ****     result =OneWire_Read();         //read slave response
+ 229              		.loc 1 71 0
+ 230 001e FFF7FEFF 		bl	OneWire_Read
+ 231 0022 0346     		mov	r3, r0
+ 232 0024 FB71     		strb	r3, [r7, #7]
+  72:OneWire.c     ****     CyDelayUs(ONE_WIRE_DELAY_F);    //55us delay
+ 233              		.loc 1 72 0
+ 234 0026 3720     		movs	r0, #55
+ 235 0028 FFF7FEFF 		bl	CyDelayUs
+  73:OneWire.c     ****     return result;
+ 236              		.loc 1 73 0
+ 237 002c FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  74:OneWire.c     **** }
+ 238              		.loc 1 74 0
+ 239 002e 1846     		mov	r0, r3
+ 240 0030 0837     		adds	r7, r7, #8
+ 241              		.cfi_def_cfa_offset 8
+ 242 0032 BD46     		mov	sp, r7
+ 243              		.cfi_def_cfa_register 13
+ 244              		@ sp needed
+ 245 0034 80BD     		pop	{r7, pc}
+ 246              		.cfi_endproc
+ 247              	.LFE66:
+ 248              		.size	OneWireReadBit, .-OneWireReadBit
+ 249 0036 00BF     		.section	.text.OneWireReadByte,"ax",%progbits
+ 250              		.align	2
+ 251              		.global	OneWireReadByte
+ 252              		.thumb
+ 253              		.thumb_func
+ 254              		.type	OneWireReadByte, %function
+ 255              	OneWireReadByte:
+ 256              	.LFB67:
+  75:OneWire.c     **** 
+  76:OneWire.c     **** /*Reads entire Byte from the bus*/
+  77:OneWire.c     **** uint8 OneWireReadByte()
+  78:OneWire.c     **** {
+ 257              		.loc 1 78 0
+ 258              		.cfi_startproc
+ 259              		@ args = 0, pretend = 0, frame = 8
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 7
+
+
+ 260              		@ frame_needed = 1, uses_anonymous_args = 0
+ 261 0000 80B5     		push	{r7, lr}
+ 262              		.cfi_def_cfa_offset 8
+ 263              		.cfi_offset 7, -8
+ 264              		.cfi_offset 14, -4
+ 265 0002 82B0     		sub	sp, sp, #8
+ 266              		.cfi_def_cfa_offset 16
+ 267 0004 00AF     		add	r7, sp, #0
+ 268              		.cfi_def_cfa_register 7
+  79:OneWire.c     ****     uint8 result=0;
+ 269              		.loc 1 79 0
+ 270 0006 0023     		movs	r3, #0
+ 271 0008 FB71     		strb	r3, [r7, #7]
+ 272              	.LBB3:
+  80:OneWire.c     ****     for(uint8 n=0;n<8;n++)
+ 273              		.loc 1 80 0
+ 274 000a 0023     		movs	r3, #0
+ 275 000c BB71     		strb	r3, [r7, #6]
+ 276 000e 0EE0     		b	.L13
+ 277              	.L15:
+  81:OneWire.c     ****     {
+  82:OneWire.c     ****         result >>= 1;               //shifts result each cycle to the right, since slave response i
+ 278              		.loc 1 82 0
+ 279 0010 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 280 0012 5B08     		lsrs	r3, r3, #1
+ 281 0014 FB71     		strb	r3, [r7, #7]
+  83:OneWire.c     ****         
+  84:OneWire.c     ****         //if result is one then set MSB
+  85:OneWire.c     ****         if(OneWireReadBit())
+ 282              		.loc 1 85 0
+ 283 0016 FFF7FEFF 		bl	OneWireReadBit
+ 284 001a 0346     		mov	r3, r0
+ 285 001c 002B     		cmp	r3, #0
+ 286 001e 03D0     		beq	.L14
+  86:OneWire.c     ****         {
+  87:OneWire.c     ****             result |= MSB_OF_BYTE;
+ 287              		.loc 1 87 0
+ 288 0020 FB79     		ldrb	r3, [r7, #7]
+ 289 0022 63F07F03 		orn	r3, r3, #127
+ 290 0026 FB71     		strb	r3, [r7, #7]
+ 291              	.L14:
+  80:OneWire.c     ****     {
+ 292              		.loc 1 80 0 discriminator 2
+ 293 0028 BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 294 002a 0133     		adds	r3, r3, #1
+ 295 002c BB71     		strb	r3, [r7, #6]
+ 296              	.L13:
+  80:OneWire.c     ****     {
+ 297              		.loc 1 80 0 is_stmt 0 discriminator 1
+ 298 002e BB79     		ldrb	r3, [r7, #6]	@ zero_extendqisi2
+ 299 0030 072B     		cmp	r3, #7
+ 300 0032 EDD9     		bls	.L15
+ 301              	.LBE3:
+  88:OneWire.c     ****         }
+  89:OneWire.c     ****         
+  90:OneWire.c     ****         
+  91:OneWire.c     ****         
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 8
+
+
+  92:OneWire.c     ****     }
+  93:OneWire.c     ****     return result;
+ 302              		.loc 1 93 0 is_stmt 1
+ 303 0034 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+  94:OneWire.c     ****     
+  95:OneWire.c     **** }
+ 304              		.loc 1 95 0
+ 305 0036 1846     		mov	r0, r3
+ 306 0038 0837     		adds	r7, r7, #8
+ 307              		.cfi_def_cfa_offset 8
+ 308 003a BD46     		mov	sp, r7
+ 309              		.cfi_def_cfa_register 13
+ 310              		@ sp needed
+ 311 003c 80BD     		pop	{r7, pc}
+ 312              		.cfi_endproc
+ 313              	.LFE67:
+ 314              		.size	OneWireReadByte, .-OneWireReadByte
+ 315              		.global	gInputSum
+ 316 003e 00BF     		.bss
+ 317              		.align	3
+ 318              		.type	gInputSum, %object
+ 319              		.size	gInputSum, 8
+ 320              	gInputSum:
+ 321 0000 00000000 		.space	8
+ 321      00000000 
+ 322              		.global	gAverageData
+ 323              		.align	2
+ 324              		.type	gAverageData, %object
+ 325              		.size	gAverageData, 4
+ 326              	gAverageData:
+ 327 0008 00000000 		.space	4
+ 328              		.global	gSendAverage
+ 329              		.type	gSendAverage, %object
+ 330              		.size	gSendAverage, 1
+ 331              	gSendAverage:
+ 332 000c 00       		.space	1
+ 333              		.section	.rodata
+ 334              		.align	2
+ 335              	.LC0:
+ 336 0000 434F4D20 		.ascii	"COM Port Open\015\012\000"
+ 336      506F7274 
+ 336      204F7065 
+ 336      6E0D0A00 
+ 337              		.align	2
+ 338              	.LC1:
+ 339 0010 0D0A4572 		.ascii	"\015\012Error no device found!\000"
+ 339      726F7220 
+ 339      6E6F2064 
+ 339      65766963 
+ 339      6520666F 
+ 340 0029 000000   		.align	2
+ 341              	.LC2:
+ 342 002c 0D0A4572 		.ascii	"\015\012Error device disconnected!\000"
+ 342      726F7220 
+ 342      64657669 
+ 342      63652064 
+ 342      6973636F 
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 9
+
+
+ 343 0049 000000   		.align	2
+ 344              	.LC3:
+ 345 004c 7B0D0A20 		.ascii	"{\015\012 \"Voltage [mV]\" : %lu,\015\012 \"Tempera"
+ 345      22566F6C 
+ 345      74616765 
+ 345      205B6D56 
+ 345      5D22203A 
+ 346 0070 74757265 		.ascii	"ture [C]\" : %hu.%hu \015\012 \"Temperature OneWire"
+ 346      205B435D 
+ 346      22203A20 
+ 346      2568752E 
+ 346      25687520 
+ 347 009b 205B435D 		.ascii	" [C]\" : %i.%i\015\012}\015\012\000"
+ 347      22203A20 
+ 347      25692E25 
+ 347      690D0A7D 
+ 347      0D0A00
+ 348              		.section	.text.main,"ax",%progbits
+ 349              		.align	2
+ 350              		.global	main
+ 351              		.thumb
+ 352              		.thumb_func
+ 353              		.type	main, %function
+ 354              	main:
+ 355              	.LFB69:
+ 356              		.file 2 "main.c"
+   1:main.c        **** /******************************************************************************
+   2:main.c        **** * File Name: main.c
+   3:main.c        **** *
+   4:main.c        **** * Version: 1.11
+   5:main.c        **** *
+   6:main.c        **** * Description: This is the source code for the ADC and UART code example.
+   7:main.c        **** *
+   8:main.c        **** * Related Document: CE195277_ADC_and_UART.pdf
+   9:main.c        **** *
+  10:main.c        **** * Hardware Dependency: See CE195277_ADC_and_UART.pdf
+  11:main.c        **** *
+  12:main.c        **** * Note:
+  13:main.c        **** * EDITED BY: Andreas BOTH
+  14:main.c        **** * DATE: 2024-04-19
+  15:main.c        **** * COURSE ID:tx00db04
+  16:main.c        **** * DESCRIPTION:  changed the output, such that the ADC temperature value and corresponding
+  17:main.c        **** *               temperature in Celsius coming from a LM35DZ temperature
+  18:main.c        **** *               sensor is transmitted via UART as JSON data script.
+  19:main.c        **** *               As well as implementing an OneWire interface, for communication wit the Dallas18B20
+  20:main.c        **** *               temperature sensor also transmitted via UART JSON data script. 
+  21:main.c        **** *
+  22:main.c        **** *******************************************************************************
+  23:main.c        **** * Copyright (2018-2020), Cypress Semiconductor Corporation. All rights reserved.
+  24:main.c        **** *******************************************************************************
+  25:main.c        **** * This software, including source code, documentation and related materials
+  26:main.c        **** * (“Software”), is owned by Cypress Semiconductor Corporation or one of its
+  27:main.c        **** * subsidiaries (“Cypress”) and is protected by and subject to worldwide patent
+  28:main.c        **** * protection (United States and foreign), United States copyright laws and
+  29:main.c        **** * international treaty provisions. Therefore, you may use this Software only
+  30:main.c        **** * as provided in the license agreement accompanying the software package from
+  31:main.c        **** * which you obtained this Software (“EULA”).
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 10
+
+
+  32:main.c        **** *
+  33:main.c        **** * If no EULA applies, Cypress hereby grants you a personal, nonexclusive,
+  34:main.c        **** * non-transferable license to copy, modify, and compile the Software source
+  35:main.c        **** * code solely for use in connection with Cypress’s integrated circuit products.
+  36:main.c        **** * Any reproduction, modification, translation, compilation, or representation
+  37:main.c        **** * of this Software except as specified above is prohibited without the express
+  38:main.c        **** * written permission of Cypress.
+  39:main.c        **** *
+  40:main.c        **** * Disclaimer: THIS SOFTWARE IS PROVIDED AS-IS, WITH NO WARRANTY OF ANY KIND, 
+  41:main.c        **** * EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, NONINFRINGEMENT, IMPLIED 
+  42:main.c        **** * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. Cypress 
+  43:main.c        **** * reserves the right to make changes to the Software without notice. Cypress 
+  44:main.c        **** * does not assume any liability arising out of the application or use of the 
+  45:main.c        **** * Software or any product or circuit described in the Software. Cypress does 
+  46:main.c        **** * not authorize its products for use in any products where a malfunction or 
+  47:main.c        **** * failure of the Cypress product may reasonably be expected to result in 
+  48:main.c        **** * significant property damage, injury or death (“High Risk Product”). By 
+  49:main.c        **** * including Cypress’s product in a High Risk Product, the manufacturer of such 
+  50:main.c        **** * system or application assumes all risk of such use and in doing so agrees to 
+  51:main.c        **** * indemnify Cypress against all liability.
+  52:main.c        **** *******************************************************************************/
+  53:main.c        **** 
+  54:main.c        **** #include <project.h>
+  55:main.c        **** #include "OneWire.c"
+  56:main.c        **** #include "stdio.h"
+  57:main.c        **** 
+  58:main.c        **** /* Project Defines */
+  59:main.c        **** #define FALSE  0
+  60:main.c        **** #define TRUE   1
+  61:main.c        **** #define TRANSMIT_BUFFER_SIZE  50
+  62:main.c        **** #define BYTE_SIZE 8
+  63:main.c        **** #define HALF_BYTE_SIZE 4
+  64:main.c        **** 
+  65:main.c        **** 
+  66:main.c        **** 
+  67:main.c        **** 
+  68:main.c        **** /*Global Variables*/
+  69:main.c        **** /*used to store the sum of the input over the duration of one second
+  70:main.c        **** 64 Bit value that way you can add 16 Bit into it about 2^48 times*/
+  71:main.c        **** volatile uint64 gInputSum = 0;
+  72:main.c        **** 
+  73:main.c        **** volatile uint32 gAverageData = 0;
+  74:main.c        **** volatile uint8 gSendAverage = 0; //Flag set every second
+  75:main.c        **** 
+  76:main.c        **** /*******************************************************************************
+  77:main.c        **** * Function Name: main
+  78:main.c        **** ********************************************************************************
+  79:main.c        **** *
+  80:main.c        **** *
+  81:main.c        **** *******************************************************************************/
+  82:main.c        **** int main()
+  83:main.c        **** {
+ 357              		.loc 2 83 0
+ 358              		.cfi_startproc
+ 359              		@ args = 0, pretend = 0, frame = 64
+ 360              		@ frame_needed = 1, uses_anonymous_args = 0
+ 361 0000 B0B5     		push	{r4, r5, r7, lr}
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 11
+
+
+ 362              		.cfi_def_cfa_offset 16
+ 363              		.cfi_offset 4, -16
+ 364              		.cfi_offset 5, -12
+ 365              		.cfi_offset 7, -8
+ 366              		.cfi_offset 14, -4
+ 367 0002 94B0     		sub	sp, sp, #80
+ 368              		.cfi_def_cfa_offset 96
+ 369 0004 04AF     		add	r7, sp, #16
+ 370              		.cfi_def_cfa 7, 80
+  84:main.c        ****     /* Variable to store ADC result */
+  85:main.c        ****     uint16 temperatureIntPart;      //stores the integer value of the temperature
+  86:main.c        ****     uint16 temperatureDecimalPart;  //stores the decimal part of the temperature
+  87:main.c        ****     
+  88:main.c        ****     uint16 oneWireResult = 0;
+ 371              		.loc 2 88 0
+ 372 0006 0023     		movs	r3, #0
+ 373 0008 FB87     		strh	r3, [r7, #62]	@ movhi
+  89:main.c        ****     
+  90:main.c        ****     /* Transmit Buffer */
+  91:main.c        ****     char TransmitBuffer[TRANSMIT_BUFFER_SIZE];
+  92:main.c        ****     
+  93:main.c        ****     /* Start the components */
+  94:main.c        ****     ADC_DelSig_1_Start();
+ 374              		.loc 2 94 0
+ 375 000a FFF7FEFF 		bl	ADC_DelSig_1_Start
+  95:main.c        ****     UART_1_Start();
+ 376              		.loc 2 95 0
+ 377 000e FFF7FEFF 		bl	UART_1_Start
+  96:main.c        ****     
+  97:main.c        ****     isr_eoc_getValue_ClearPending();
+ 378              		.loc 2 97 0
+ 379 0012 FFF7FEFF 		bl	isr_eoc_getValue_ClearPending
+  98:main.c        ****     isr_eoc_getValue_Start();
+ 380              		.loc 2 98 0
+ 381 0016 FFF7FEFF 		bl	isr_eoc_getValue_Start
+  99:main.c        ****     
+ 100:main.c        ****     isr_averageData_ClearPending();
+ 382              		.loc 2 100 0
+ 383 001a FFF7FEFF 		bl	isr_averageData_ClearPending
+ 101:main.c        ****     isr_averageData_Start();
+ 384              		.loc 2 101 0
+ 385 001e FFF7FEFF 		bl	isr_averageData_Start
+ 102:main.c        ****     
+ 103:main.c        ****     CyGlobalIntEnable
+ 386              		.loc 2 103 0
+ 387              		.syntax unified
+ 388              	@ 103 "main.c" 1
+ 389 0022 62B6     		CPSIE   i
+ 390              	@ 0 "" 2
+ 104:main.c        ****     /* Initialize Variables */
+ 105:main.c        ****     gSendAverage = FALSE;
+ 391              		.loc 2 105 0
+ 392              		.thumb
+ 393              		.syntax unified
+ 394 0024 3A4B     		ldr	r3, .L25
+ 395 0026 0022     		movs	r2, #0
+ 396 0028 1A70     		strb	r2, [r3]
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 12
+
+
+ 106:main.c        ****     
+ 107:main.c        ****     /* Start the ADC conversion */
+ 108:main.c        ****     ADC_DelSig_1_StartConvert();
+ 397              		.loc 2 108 0
+ 398 002a FFF7FEFF 		bl	ADC_DelSig_1_StartConvert
+ 109:main.c        ****     
+ 110:main.c        ****     /* Send message to verify COM port is connected properly */
+ 111:main.c        ****     UART_1_PutString("COM Port Open\r\n");
+ 399              		.loc 2 111 0
+ 400 002e 3948     		ldr	r0, .L25+4
+ 401 0030 FFF7FEFF 		bl	UART_1_PutString
+ 402              	.L24:
+ 112:main.c        ****     
+ 113:main.c        ****     
+ 114:main.c        ****     for(;;)
+ 115:main.c        ****     {
+ 116:main.c        ****             if(gSendAverage)
+ 403              		.loc 2 116 0
+ 404 0034 364B     		ldr	r3, .L25
+ 405 0036 1B78     		ldrb	r3, [r3]
+ 406 0038 DBB2     		uxtb	r3, r3
+ 407 003a 002B     		cmp	r3, #0
+ 408 003c FAD0     		beq	.L24
+ 117:main.c        ****             {
+ 118:main.c        ****              /* Format ADC result for transmition */
+ 119:main.c        ****              CyGlobalIntDisable
+ 409              		.loc 2 119 0
+ 410              		.syntax unified
+ 411              	@ 119 "main.c" 1
+ 412 003e 72B6     		CPSID   i
+ 413              	@ 0 "" 2
+ 120:main.c        ****              /*start OneWire communication*/
+ 121:main.c        ****       
+ 122:main.c        ****                 if(!OneWireReset()) //Check for reachable devices
+ 414              		.loc 2 122 0
+ 415              		.thumb
+ 416              		.syntax unified
+ 417 0040 FFF7FEFF 		bl	OneWireReset
+ 418 0044 0346     		mov	r3, r0
+ 419 0046 002B     		cmp	r3, #0
+ 420 0048 03D1     		bne	.L19
+ 123:main.c        ****                 {
+ 124:main.c        ****                     UART_1_PutString("\r\nError no device found!"); 
+ 421              		.loc 2 124 0
+ 422 004a 3348     		ldr	r0, .L25+8
+ 423 004c FFF7FEFF 		bl	UART_1_PutString
+ 424 0050 2BE0     		b	.L20
+ 425              	.L19:
+ 125:main.c        ****                 }else
+ 126:main.c        ****                 {
+ 127:main.c        ****                     OneWireWriteByte(SKIP_ROM);                         //Address all devices (just
+ 426              		.loc 2 127 0
+ 427 0052 CC20     		movs	r0, #204
+ 428 0054 FFF7FEFF 		bl	OneWireWriteByte
+ 128:main.c        ****                     
+ 129:main.c        ****                     OneWireWriteByte(READ_SCRATCHPAD);                  //Write read command
+ 429              		.loc 2 129 0
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 13
+
+
+ 430 0058 BE20     		movs	r0, #190
+ 431 005a FFF7FEFF 		bl	OneWireWriteByte
+ 432              	.LBB4:
+ 130:main.c        ****                     for(int i=0; i<2;i++)
+ 433              		.loc 2 130 0
+ 434 005e 0023     		movs	r3, #0
+ 435 0060 BB63     		str	r3, [r7, #56]
+ 436 0062 10E0     		b	.L21
+ 437              	.L22:
+ 131:main.c        ****                     {   
+ 132:main.c        ****                         oneWireResult |= (OneWireReadByte()<<(i*BYTE_SIZE));
+ 438              		.loc 2 132 0 discriminator 3
+ 439 0064 FFF7FEFF 		bl	OneWireReadByte
+ 440 0068 0346     		mov	r3, r0
+ 441 006a 1A46     		mov	r2, r3
+ 442 006c BB6B     		ldr	r3, [r7, #56]
+ 443 006e DB00     		lsls	r3, r3, #3
+ 444 0070 02FA03F3 		lsl	r3, r2, r3
+ 445 0074 1AB2     		sxth	r2, r3
+ 446 0076 B7F93E30 		ldrsh	r3, [r7, #62]
+ 447 007a 1343     		orrs	r3, r3, r2
+ 448 007c 1BB2     		sxth	r3, r3
+ 449 007e FB87     		strh	r3, [r7, #62]	@ movhi
+ 130:main.c        ****                     for(int i=0; i<2;i++)
+ 450              		.loc 2 130 0 discriminator 3
+ 451 0080 BB6B     		ldr	r3, [r7, #56]
+ 452 0082 0133     		adds	r3, r3, #1
+ 453 0084 BB63     		str	r3, [r7, #56]
+ 454              	.L21:
+ 130:main.c        ****                     for(int i=0; i<2;i++)
+ 455              		.loc 2 130 0 is_stmt 0 discriminator 1
+ 456 0086 BB6B     		ldr	r3, [r7, #56]
+ 457 0088 012B     		cmp	r3, #1
+ 458 008a EBDD     		ble	.L22
+ 459              	.LBE4:
+ 133:main.c        ****                     }
+ 134:main.c        ****                     if(!OneWireReset())                                 //check if device is still 
+ 460              		.loc 2 134 0 is_stmt 1
+ 461 008c FFF7FEFF 		bl	OneWireReset
+ 462 0090 0346     		mov	r3, r0
+ 463 0092 002B     		cmp	r3, #0
+ 464 0094 03D1     		bne	.L23
+ 135:main.c        ****                     {
+ 136:main.c        ****                         UART_1_PutString("\r\nError device disconnected!");
+ 465              		.loc 2 136 0
+ 466 0096 2148     		ldr	r0, .L25+12
+ 467 0098 FFF7FEFF 		bl	UART_1_PutString
+ 468 009c 05E0     		b	.L20
+ 469              	.L23:
+ 137:main.c        ****                     }
+ 138:main.c        ****                     else{
+ 139:main.c        ****      
+ 140:main.c        ****                     OneWireWriteByte(SKIP_ROM);
+ 470              		.loc 2 140 0
+ 471 009e CC20     		movs	r0, #204
+ 472 00a0 FFF7FEFF 		bl	OneWireWriteByte
+ 141:main.c        ****                     OneWireWriteByte(START_TEMP_COMVERSION); 
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 14
+
+
+ 473              		.loc 2 141 0
+ 474 00a4 4420     		movs	r0, #68
+ 475 00a6 FFF7FEFF 		bl	OneWireWriteByte
+ 476              	.L20:
+ 142:main.c        ****                     }
+ 143:main.c        ****                     
+ 144:main.c        ****                 }
+ 145:main.c        ****                 
+ 146:main.c        ****              temperatureIntPart     = gAverageData / 10;    //drops the decimal part of the tempera
+ 477              		.loc 2 146 0
+ 478 00aa 1D4B     		ldr	r3, .L25+16
+ 479 00ac 1B68     		ldr	r3, [r3]
+ 480 00ae 1D4A     		ldr	r2, .L25+20
+ 481 00b0 A2FB0323 		umull	r2, r3, r2, r3
+ 482 00b4 DB08     		lsrs	r3, r3, #3
+ 483 00b6 FB86     		strh	r3, [r7, #54]	@ movhi
+ 147:main.c        ****              temperatureDecimalPart = gAverageData % 10;    //drops the integer part of the tempera
+ 484              		.loc 2 147 0
+ 485 00b8 194B     		ldr	r3, .L25+16
+ 486 00ba 1968     		ldr	r1, [r3]
+ 487 00bc 194B     		ldr	r3, .L25+20
+ 488 00be A3FB0123 		umull	r2, r3, r3, r1
+ 489 00c2 DA08     		lsrs	r2, r3, #3
+ 490 00c4 1346     		mov	r3, r2
+ 491 00c6 9B00     		lsls	r3, r3, #2
+ 492 00c8 1344     		add	r3, r3, r2
+ 493 00ca 5B00     		lsls	r3, r3, #1
+ 494 00cc CA1A     		subs	r2, r1, r3
+ 495 00ce 1346     		mov	r3, r2	@ movhi
+ 496 00d0 BB86     		strh	r3, [r7, #52]	@ movhi
+ 148:main.c        ****              sprintf(TransmitBuffer, "{\r\n \"Voltage [mV]\" : %lu,\r\n \"Temperature [C]\" : %hu.%
+ 497              		.loc 2 148 0
+ 498 00d2 134B     		ldr	r3, .L25+16
+ 499 00d4 1968     		ldr	r1, [r3]
+ 500 00d6 FC8E     		ldrh	r4, [r7, #54]
+ 501 00d8 BB8E     		ldrh	r3, [r7, #52]
+ 502 00da FA8F     		ldrh	r2, [r7, #62]
+ 503 00dc 1209     		lsrs	r2, r2, #4
+ 504 00de 92B2     		uxth	r2, r2
+ 505 00e0 1546     		mov	r5, r2
+ 506 00e2 FA8F     		ldrh	r2, [r7, #62]
+ 507 00e4 02F00F02 		and	r2, r2, #15
+ 508 00e8 3846     		mov	r0, r7
+ 509 00ea 0292     		str	r2, [sp, #8]
+ 510 00ec 0195     		str	r5, [sp, #4]
+ 511 00ee 0093     		str	r3, [sp]
+ 512 00f0 2346     		mov	r3, r4
+ 513 00f2 0A46     		mov	r2, r1
+ 514 00f4 0C49     		ldr	r1, .L25+24
+ 515 00f6 FFF7FEFF 		bl	sprintf
+ 149:main.c        ****                      gAverageData,
+ 150:main.c        ****                     temperatureIntPart,
+ 151:main.c        ****                     temperatureDecimalPart,
+ 152:main.c        ****                     (oneWireResult>>HALF_BYTE_SIZE), //drop last 4 bits, they are the fractional pa
+ 153:main.c        ****                     (oneWireResult&0x000f));         //drop all bits despite fractional part
+ 154:main.c        ****             
+ 155:main.c        ****             CyGlobalIntEnable
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 15
+
+
+ 516              		.loc 2 155 0
+ 517              		.syntax unified
+ 518              	@ 155 "main.c" 1
+ 519 00fa 62B6     		CPSIE   i
+ 520              	@ 0 "" 2
+ 156:main.c        ****              /* Send out the data */
+ 157:main.c        ****              UART_1_PutString(TransmitBuffer);
+ 521              		.loc 2 157 0
+ 522              		.thumb
+ 523              		.syntax unified
+ 524 00fc 3B46     		mov	r3, r7
+ 525 00fe 1846     		mov	r0, r3
+ 526 0100 FFF7FEFF 		bl	UART_1_PutString
+ 158:main.c        ****              /* Reset the sendAverage flag */
+ 159:main.c        ****              oneWireResult=0;
+ 527              		.loc 2 159 0
+ 528 0104 0023     		movs	r3, #0
+ 529 0106 FB87     		strh	r3, [r7, #62]	@ movhi
+ 160:main.c        ****              gSendAverage = FALSE;
+ 530              		.loc 2 160 0
+ 531 0108 014B     		ldr	r3, .L25
+ 532 010a 0022     		movs	r2, #0
+ 533 010c 1A70     		strb	r2, [r3]
+ 161:main.c        ****         }        
+ 162:main.c        ****     }
+ 534              		.loc 2 162 0
+ 535 010e 91E7     		b	.L24
+ 536              	.L26:
+ 537              		.align	2
+ 538              	.L25:
+ 539 0110 00000000 		.word	gSendAverage
+ 540 0114 00000000 		.word	.LC0
+ 541 0118 10000000 		.word	.LC1
+ 542 011c 2C000000 		.word	.LC2
+ 543 0120 00000000 		.word	gAverageData
+ 544 0124 CDCCCCCC 		.word	-858993459
+ 545 0128 4C000000 		.word	.LC3
+ 546              		.cfi_endproc
+ 547              	.LFE69:
+ 548              		.size	main, .-main
+ 549              		.text
+ 550              	.Letext0:
+ 551              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 552              		.file 4 "c:\\program files (x86)\\cypress\\psoc creator\\4.4\\psoc creator\\import\\gnu\\arm\\5.4.
+ 553              		.file 5 "Generated_Source\\PSoC5/cytypes.h"
+ 554              		.file 6 "Generated_Source\\PSoC5/core_cm3.h"
+ 555              		.section	.debug_info,"",%progbits
+ 556              	.Ldebug_info0:
+ 557 0000 89020000 		.4byte	0x289
+ 558 0004 0400     		.2byte	0x4
+ 559 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 560 000a 04       		.byte	0x4
+ 561 000b 01       		.uleb128 0x1
+ 562 000c 00000000 		.4byte	.LASF36
+ 563 0010 0C       		.byte	0xc
+ 564 0011 38020000 		.4byte	.LASF37
+ 565 0015 8E000000 		.4byte	.LASF38
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 16
+
+
+ 566 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 567 001d 00000000 		.4byte	0
+ 568 0021 00000000 		.4byte	.Ldebug_line0
+ 569 0025 02       		.uleb128 0x2
+ 570 0026 01       		.byte	0x1
+ 571 0027 06       		.byte	0x6
+ 572 0028 A0020000 		.4byte	.LASF0
+ 573 002c 02       		.uleb128 0x2
+ 574 002d 01       		.byte	0x1
+ 575 002e 08       		.byte	0x8
+ 576 002f 62010000 		.4byte	.LASF1
+ 577 0033 02       		.uleb128 0x2
+ 578 0034 02       		.byte	0x2
+ 579 0035 05       		.byte	0x5
+ 580 0036 68020000 		.4byte	.LASF2
+ 581 003a 02       		.uleb128 0x2
+ 582 003b 02       		.byte	0x2
+ 583 003c 07       		.byte	0x7
+ 584 003d 16010000 		.4byte	.LASF3
+ 585 0041 03       		.uleb128 0x3
+ 586 0042 05010000 		.4byte	.LASF9
+ 587 0046 03       		.byte	0x3
+ 588 0047 3F       		.byte	0x3f
+ 589 0048 4C000000 		.4byte	0x4c
+ 590 004c 02       		.uleb128 0x2
+ 591 004d 04       		.byte	0x4
+ 592 004e 05       		.byte	0x5
+ 593 004f 78020000 		.4byte	.LASF4
+ 594 0053 02       		.uleb128 0x2
+ 595 0054 04       		.byte	0x4
+ 596 0055 07       		.byte	0x7
+ 597 0056 70010000 		.4byte	.LASF5
+ 598 005a 02       		.uleb128 0x2
+ 599 005b 08       		.byte	0x8
+ 600 005c 05       		.byte	0x5
+ 601 005d 2A020000 		.4byte	.LASF6
+ 602 0061 02       		.uleb128 0x2
+ 603 0062 08       		.byte	0x8
+ 604 0063 07       		.byte	0x7
+ 605 0064 DF010000 		.4byte	.LASF7
+ 606 0068 04       		.uleb128 0x4
+ 607 0069 04       		.byte	0x4
+ 608 006a 05       		.byte	0x5
+ 609 006b 696E7400 		.ascii	"int\000"
+ 610 006f 02       		.uleb128 0x2
+ 611 0070 04       		.byte	0x4
+ 612 0071 07       		.byte	0x7
+ 613 0072 C3010000 		.4byte	.LASF8
+ 614 0076 03       		.uleb128 0x3
+ 615 0077 0A020000 		.4byte	.LASF10
+ 616 007b 04       		.byte	0x4
+ 617 007c 2C       		.byte	0x2c
+ 618 007d 41000000 		.4byte	0x41
+ 619 0081 05       		.uleb128 0x5
+ 620 0082 72020000 		.4byte	.LASF11
+ 621 0086 05       		.byte	0x5
+ 622 0087 E801     		.2byte	0x1e8
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 17
+
+
+ 623 0089 2C000000 		.4byte	0x2c
+ 624 008d 05       		.uleb128 0x5
+ 625 008e A0010000 		.4byte	.LASF12
+ 626 0092 05       		.byte	0x5
+ 627 0093 E901     		.2byte	0x1e9
+ 628 0095 3A000000 		.4byte	0x3a
+ 629 0099 05       		.uleb128 0x5
+ 630 009a B7010000 		.4byte	.LASF13
+ 631 009e 05       		.byte	0x5
+ 632 009f EA01     		.2byte	0x1ea
+ 633 00a1 53000000 		.4byte	0x53
+ 634 00a5 02       		.uleb128 0x2
+ 635 00a6 04       		.byte	0x4
+ 636 00a7 04       		.byte	0x4
+ 637 00a8 5C010000 		.4byte	.LASF14
+ 638 00ac 02       		.uleb128 0x2
+ 639 00ad 08       		.byte	0x8
+ 640 00ae 04       		.byte	0x4
+ 641 00af 8F010000 		.4byte	.LASF15
+ 642 00b3 05       		.uleb128 0x5
+ 643 00b4 0F010000 		.4byte	.LASF16
+ 644 00b8 05       		.byte	0x5
+ 645 00b9 F401     		.2byte	0x1f4
+ 646 00bb 61000000 		.4byte	0x61
+ 647 00bf 02       		.uleb128 0x2
+ 648 00c0 01       		.byte	0x1
+ 649 00c1 08       		.byte	0x8
+ 650 00c2 3F020000 		.4byte	.LASF17
+ 651 00c6 06       		.uleb128 0x6
+ 652 00c7 81000000 		.4byte	0x81
+ 653 00cb 06       		.uleb128 0x6
+ 654 00cc 99000000 		.4byte	0x99
+ 655 00d0 02       		.uleb128 0x2
+ 656 00d1 08       		.byte	0x8
+ 657 00d2 04       		.byte	0x4
+ 658 00d3 81020000 		.4byte	.LASF18
+ 659 00d7 02       		.uleb128 0x2
+ 660 00d8 04       		.byte	0x4
+ 661 00d9 07       		.byte	0x7
+ 662 00da 21020000 		.4byte	.LASF19
+ 663 00de 07       		.uleb128 0x7
+ 664 00df 4F010000 		.4byte	.LASF20
+ 665 00e3 01       		.byte	0x1
+ 666 00e4 12       		.byte	0x12
+ 667 00e5 68000000 		.4byte	0x68
+ 668 00e9 00000000 		.4byte	.LFB63
+ 669 00ed 46000000 		.4byte	.LFE63-.LFB63
+ 670 00f1 01       		.uleb128 0x1
+ 671 00f2 9C       		.byte	0x9c
+ 672 00f3 06010000 		.4byte	0x106
+ 673 00f7 08       		.uleb128 0x8
+ 674 00f8 03020000 		.4byte	.LASF24
+ 675 00fc 01       		.byte	0x1
+ 676 00fd 14       		.byte	0x14
+ 677 00fe 68000000 		.4byte	0x68
+ 678 0102 02       		.uleb128 0x2
+ 679 0103 91       		.byte	0x91
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 18
+
+
+ 680 0104 74       		.sleb128 -12
+ 681 0105 00       		.byte	0
+ 682 0106 09       		.uleb128 0x9
+ 683 0107 A7010000 		.4byte	.LASF21
+ 684 010b 01       		.byte	0x1
+ 685 010c 22       		.byte	0x22
+ 686 010d 00000000 		.4byte	.LFB64
+ 687 0111 44000000 		.4byte	.LFE64-.LFB64
+ 688 0115 01       		.uleb128 0x1
+ 689 0116 9C       		.byte	0x9c
+ 690 0117 2A010000 		.4byte	0x12a
+ 691 011b 0A       		.uleb128 0xa
+ 692 011c 62697400 		.ascii	"bit\000"
+ 693 0120 01       		.byte	0x1
+ 694 0121 22       		.byte	0x22
+ 695 0122 81000000 		.4byte	0x81
+ 696 0126 02       		.uleb128 0x2
+ 697 0127 91       		.byte	0x91
+ 698 0128 77       		.sleb128 -9
+ 699 0129 00       		.byte	0
+ 700 012a 09       		.uleb128 0x9
+ 701 012b 3E010000 		.4byte	.LASF22
+ 702 012f 01       		.byte	0x1
+ 703 0130 36       		.byte	0x36
+ 704 0131 00000000 		.4byte	.LFB65
+ 705 0135 3A000000 		.4byte	.LFE65-.LFB65
+ 706 0139 01       		.uleb128 0x1
+ 707 013a 9C       		.byte	0x9c
+ 708 013b 64010000 		.4byte	0x164
+ 709 013f 0B       		.uleb128 0xb
+ 710 0140 29010000 		.4byte	.LASF23
+ 711 0144 01       		.byte	0x1
+ 712 0145 36       		.byte	0x36
+ 713 0146 81000000 		.4byte	0x81
+ 714 014a 02       		.uleb128 0x2
+ 715 014b 91       		.byte	0x91
+ 716 014c 6F       		.sleb128 -17
+ 717 014d 0C       		.uleb128 0xc
+ 718 014e 0A000000 		.4byte	.LBB2
+ 719 0152 28000000 		.4byte	.LBE2-.LBB2
+ 720 0156 0D       		.uleb128 0xd
+ 721 0157 6E00     		.ascii	"n\000"
+ 722 0159 01       		.byte	0x1
+ 723 015a 38       		.byte	0x38
+ 724 015b 68000000 		.4byte	0x68
+ 725 015f 02       		.uleb128 0x2
+ 726 0160 91       		.byte	0x91
+ 727 0161 74       		.sleb128 -12
+ 728 0162 00       		.byte	0
+ 729 0163 00       		.byte	0
+ 730 0164 07       		.uleb128 0x7
+ 731 0165 D0010000 		.4byte	.LASF25
+ 732 0169 01       		.byte	0x1
+ 733 016a 40       		.byte	0x40
+ 734 016b 81000000 		.4byte	0x81
+ 735 016f 00000000 		.4byte	.LFB66
+ 736 0173 36000000 		.4byte	.LFE66-.LFB66
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 19
+
+
+ 737 0177 01       		.uleb128 0x1
+ 738 0178 9C       		.byte	0x9c
+ 739 0179 8C010000 		.4byte	0x18c
+ 740 017d 08       		.uleb128 0x8
+ 741 017e 03020000 		.4byte	.LASF24
+ 742 0182 01       		.byte	0x1
+ 743 0183 42       		.byte	0x42
+ 744 0184 81000000 		.4byte	0x81
+ 745 0188 02       		.uleb128 0x2
+ 746 0189 91       		.byte	0x91
+ 747 018a 77       		.sleb128 -9
+ 748 018b 00       		.byte	0
+ 749 018c 07       		.uleb128 0x7
+ 750 018d 2E010000 		.4byte	.LASF26
+ 751 0191 01       		.byte	0x1
+ 752 0192 4D       		.byte	0x4d
+ 753 0193 81000000 		.4byte	0x81
+ 754 0197 00000000 		.4byte	.LFB67
+ 755 019b 3E000000 		.4byte	.LFE67-.LFB67
+ 756 019f 01       		.uleb128 0x1
+ 757 01a0 9C       		.byte	0x9c
+ 758 01a1 CA010000 		.4byte	0x1ca
+ 759 01a5 08       		.uleb128 0x8
+ 760 01a6 03020000 		.4byte	.LASF24
+ 761 01aa 01       		.byte	0x1
+ 762 01ab 4F       		.byte	0x4f
+ 763 01ac 81000000 		.4byte	0x81
+ 764 01b0 02       		.uleb128 0x2
+ 765 01b1 91       		.byte	0x91
+ 766 01b2 77       		.sleb128 -9
+ 767 01b3 0C       		.uleb128 0xc
+ 768 01b4 0A000000 		.4byte	.LBB3
+ 769 01b8 2A000000 		.4byte	.LBE3-.LBB3
+ 770 01bc 0D       		.uleb128 0xd
+ 771 01bd 6E00     		.ascii	"n\000"
+ 772 01bf 01       		.byte	0x1
+ 773 01c0 50       		.byte	0x50
+ 774 01c1 81000000 		.4byte	0x81
+ 775 01c5 02       		.uleb128 0x2
+ 776 01c6 91       		.byte	0x91
+ 777 01c7 76       		.sleb128 -10
+ 778 01c8 00       		.byte	0
+ 779 01c9 00       		.byte	0
+ 780 01ca 07       		.uleb128 0x7
+ 781 01cb BE010000 		.4byte	.LASF27
+ 782 01cf 02       		.byte	0x2
+ 783 01d0 52       		.byte	0x52
+ 784 01d1 68000000 		.4byte	0x68
+ 785 01d5 00000000 		.4byte	.LFB69
+ 786 01d9 2C010000 		.4byte	.LFE69-.LFB69
+ 787 01dd 01       		.uleb128 0x1
+ 788 01de 9C       		.byte	0x9c
+ 789 01df 33020000 		.4byte	0x233
+ 790 01e3 08       		.uleb128 0x8
+ 791 01e4 8D020000 		.4byte	.LASF28
+ 792 01e8 02       		.byte	0x2
+ 793 01e9 55       		.byte	0x55
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 20
+
+
+ 794 01ea 8D000000 		.4byte	0x8d
+ 795 01ee 02       		.uleb128 0x2
+ 796 01ef 91       		.byte	0x91
+ 797 01f0 66       		.sleb128 -26
+ 798 01f1 08       		.uleb128 0x8
+ 799 01f2 44020000 		.4byte	.LASF29
+ 800 01f6 02       		.byte	0x2
+ 801 01f7 56       		.byte	0x56
+ 802 01f8 8D000000 		.4byte	0x8d
+ 803 01fc 02       		.uleb128 0x2
+ 804 01fd 91       		.byte	0x91
+ 805 01fe 64       		.sleb128 -28
+ 806 01ff 08       		.uleb128 0x8
+ 807 0200 AC020000 		.4byte	.LASF30
+ 808 0204 02       		.byte	0x2
+ 809 0205 58       		.byte	0x58
+ 810 0206 8D000000 		.4byte	0x8d
+ 811 020a 02       		.uleb128 0x2
+ 812 020b 91       		.byte	0x91
+ 813 020c 6E       		.sleb128 -18
+ 814 020d 08       		.uleb128 0x8
+ 815 020e 12020000 		.4byte	.LASF31
+ 816 0212 02       		.byte	0x2
+ 817 0213 5B       		.byte	0x5b
+ 818 0214 33020000 		.4byte	0x233
+ 819 0218 03       		.uleb128 0x3
+ 820 0219 91       		.byte	0x91
+ 821 021a B07F     		.sleb128 -80
+ 822 021c 0C       		.uleb128 0xc
+ 823 021d 5E000000 		.4byte	.LBB4
+ 824 0221 2E000000 		.4byte	.LBE4-.LBB4
+ 825 0225 0D       		.uleb128 0xd
+ 826 0226 6900     		.ascii	"i\000"
+ 827 0228 02       		.byte	0x2
+ 828 0229 82       		.byte	0x82
+ 829 022a 68000000 		.4byte	0x68
+ 830 022e 02       		.uleb128 0x2
+ 831 022f 91       		.byte	0x91
+ 832 0230 68       		.sleb128 -24
+ 833 0231 00       		.byte	0
+ 834 0232 00       		.byte	0
+ 835 0233 0E       		.uleb128 0xe
+ 836 0234 BF000000 		.4byte	0xbf
+ 837 0238 43020000 		.4byte	0x243
+ 838 023c 0F       		.uleb128 0xf
+ 839 023d D7000000 		.4byte	0xd7
+ 840 0241 31       		.byte	0x31
+ 841 0242 00       		.byte	0
+ 842 0243 10       		.uleb128 0x10
+ 843 0244 82010000 		.4byte	.LASF32
+ 844 0248 06       		.byte	0x6
+ 845 0249 1207     		.2byte	0x712
+ 846 024b 4F020000 		.4byte	0x24f
+ 847 024f 06       		.uleb128 0x6
+ 848 0250 76000000 		.4byte	0x76
+ 849 0254 11       		.uleb128 0x11
+ 850 0255 96010000 		.4byte	.LASF33
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 21
+
+
+ 851 0259 02       		.byte	0x2
+ 852 025a 47       		.byte	0x47
+ 853 025b 65020000 		.4byte	0x265
+ 854 025f 05       		.uleb128 0x5
+ 855 0260 03       		.byte	0x3
+ 856 0261 00000000 		.4byte	gInputSum
+ 857 0265 06       		.uleb128 0x6
+ 858 0266 B3000000 		.4byte	0xb3
+ 859 026a 11       		.uleb128 0x11
+ 860 026b 5B020000 		.4byte	.LASF34
+ 861 026f 02       		.byte	0x2
+ 862 0270 49       		.byte	0x49
+ 863 0271 CB000000 		.4byte	0xcb
+ 864 0275 05       		.uleb128 0x5
+ 865 0276 03       		.byte	0x3
+ 866 0277 00000000 		.4byte	gAverageData
+ 867 027b 11       		.uleb128 0x11
+ 868 027c F6010000 		.4byte	.LASF35
+ 869 0280 02       		.byte	0x2
+ 870 0281 4A       		.byte	0x4a
+ 871 0282 C6000000 		.4byte	0xc6
+ 872 0286 05       		.uleb128 0x5
+ 873 0287 03       		.byte	0x3
+ 874 0288 00000000 		.4byte	gSendAverage
+ 875 028c 00       		.byte	0
+ 876              		.section	.debug_abbrev,"",%progbits
+ 877              	.Ldebug_abbrev0:
+ 878 0000 01       		.uleb128 0x1
+ 879 0001 11       		.uleb128 0x11
+ 880 0002 01       		.byte	0x1
+ 881 0003 25       		.uleb128 0x25
+ 882 0004 0E       		.uleb128 0xe
+ 883 0005 13       		.uleb128 0x13
+ 884 0006 0B       		.uleb128 0xb
+ 885 0007 03       		.uleb128 0x3
+ 886 0008 0E       		.uleb128 0xe
+ 887 0009 1B       		.uleb128 0x1b
+ 888 000a 0E       		.uleb128 0xe
+ 889 000b 55       		.uleb128 0x55
+ 890 000c 17       		.uleb128 0x17
+ 891 000d 11       		.uleb128 0x11
+ 892 000e 01       		.uleb128 0x1
+ 893 000f 10       		.uleb128 0x10
+ 894 0010 17       		.uleb128 0x17
+ 895 0011 00       		.byte	0
+ 896 0012 00       		.byte	0
+ 897 0013 02       		.uleb128 0x2
+ 898 0014 24       		.uleb128 0x24
+ 899 0015 00       		.byte	0
+ 900 0016 0B       		.uleb128 0xb
+ 901 0017 0B       		.uleb128 0xb
+ 902 0018 3E       		.uleb128 0x3e
+ 903 0019 0B       		.uleb128 0xb
+ 904 001a 03       		.uleb128 0x3
+ 905 001b 0E       		.uleb128 0xe
+ 906 001c 00       		.byte	0
+ 907 001d 00       		.byte	0
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 22
+
+
+ 908 001e 03       		.uleb128 0x3
+ 909 001f 16       		.uleb128 0x16
+ 910 0020 00       		.byte	0
+ 911 0021 03       		.uleb128 0x3
+ 912 0022 0E       		.uleb128 0xe
+ 913 0023 3A       		.uleb128 0x3a
+ 914 0024 0B       		.uleb128 0xb
+ 915 0025 3B       		.uleb128 0x3b
+ 916 0026 0B       		.uleb128 0xb
+ 917 0027 49       		.uleb128 0x49
+ 918 0028 13       		.uleb128 0x13
+ 919 0029 00       		.byte	0
+ 920 002a 00       		.byte	0
+ 921 002b 04       		.uleb128 0x4
+ 922 002c 24       		.uleb128 0x24
+ 923 002d 00       		.byte	0
+ 924 002e 0B       		.uleb128 0xb
+ 925 002f 0B       		.uleb128 0xb
+ 926 0030 3E       		.uleb128 0x3e
+ 927 0031 0B       		.uleb128 0xb
+ 928 0032 03       		.uleb128 0x3
+ 929 0033 08       		.uleb128 0x8
+ 930 0034 00       		.byte	0
+ 931 0035 00       		.byte	0
+ 932 0036 05       		.uleb128 0x5
+ 933 0037 16       		.uleb128 0x16
+ 934 0038 00       		.byte	0
+ 935 0039 03       		.uleb128 0x3
+ 936 003a 0E       		.uleb128 0xe
+ 937 003b 3A       		.uleb128 0x3a
+ 938 003c 0B       		.uleb128 0xb
+ 939 003d 3B       		.uleb128 0x3b
+ 940 003e 05       		.uleb128 0x5
+ 941 003f 49       		.uleb128 0x49
+ 942 0040 13       		.uleb128 0x13
+ 943 0041 00       		.byte	0
+ 944 0042 00       		.byte	0
+ 945 0043 06       		.uleb128 0x6
+ 946 0044 35       		.uleb128 0x35
+ 947 0045 00       		.byte	0
+ 948 0046 49       		.uleb128 0x49
+ 949 0047 13       		.uleb128 0x13
+ 950 0048 00       		.byte	0
+ 951 0049 00       		.byte	0
+ 952 004a 07       		.uleb128 0x7
+ 953 004b 2E       		.uleb128 0x2e
+ 954 004c 01       		.byte	0x1
+ 955 004d 3F       		.uleb128 0x3f
+ 956 004e 19       		.uleb128 0x19
+ 957 004f 03       		.uleb128 0x3
+ 958 0050 0E       		.uleb128 0xe
+ 959 0051 3A       		.uleb128 0x3a
+ 960 0052 0B       		.uleb128 0xb
+ 961 0053 3B       		.uleb128 0x3b
+ 962 0054 0B       		.uleb128 0xb
+ 963 0055 49       		.uleb128 0x49
+ 964 0056 13       		.uleb128 0x13
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 23
+
+
+ 965 0057 11       		.uleb128 0x11
+ 966 0058 01       		.uleb128 0x1
+ 967 0059 12       		.uleb128 0x12
+ 968 005a 06       		.uleb128 0x6
+ 969 005b 40       		.uleb128 0x40
+ 970 005c 18       		.uleb128 0x18
+ 971 005d 9642     		.uleb128 0x2116
+ 972 005f 19       		.uleb128 0x19
+ 973 0060 01       		.uleb128 0x1
+ 974 0061 13       		.uleb128 0x13
+ 975 0062 00       		.byte	0
+ 976 0063 00       		.byte	0
+ 977 0064 08       		.uleb128 0x8
+ 978 0065 34       		.uleb128 0x34
+ 979 0066 00       		.byte	0
+ 980 0067 03       		.uleb128 0x3
+ 981 0068 0E       		.uleb128 0xe
+ 982 0069 3A       		.uleb128 0x3a
+ 983 006a 0B       		.uleb128 0xb
+ 984 006b 3B       		.uleb128 0x3b
+ 985 006c 0B       		.uleb128 0xb
+ 986 006d 49       		.uleb128 0x49
+ 987 006e 13       		.uleb128 0x13
+ 988 006f 02       		.uleb128 0x2
+ 989 0070 18       		.uleb128 0x18
+ 990 0071 00       		.byte	0
+ 991 0072 00       		.byte	0
+ 992 0073 09       		.uleb128 0x9
+ 993 0074 2E       		.uleb128 0x2e
+ 994 0075 01       		.byte	0x1
+ 995 0076 3F       		.uleb128 0x3f
+ 996 0077 19       		.uleb128 0x19
+ 997 0078 03       		.uleb128 0x3
+ 998 0079 0E       		.uleb128 0xe
+ 999 007a 3A       		.uleb128 0x3a
+ 1000 007b 0B       		.uleb128 0xb
+ 1001 007c 3B       		.uleb128 0x3b
+ 1002 007d 0B       		.uleb128 0xb
+ 1003 007e 27       		.uleb128 0x27
+ 1004 007f 19       		.uleb128 0x19
+ 1005 0080 11       		.uleb128 0x11
+ 1006 0081 01       		.uleb128 0x1
+ 1007 0082 12       		.uleb128 0x12
+ 1008 0083 06       		.uleb128 0x6
+ 1009 0084 40       		.uleb128 0x40
+ 1010 0085 18       		.uleb128 0x18
+ 1011 0086 9642     		.uleb128 0x2116
+ 1012 0088 19       		.uleb128 0x19
+ 1013 0089 01       		.uleb128 0x1
+ 1014 008a 13       		.uleb128 0x13
+ 1015 008b 00       		.byte	0
+ 1016 008c 00       		.byte	0
+ 1017 008d 0A       		.uleb128 0xa
+ 1018 008e 05       		.uleb128 0x5
+ 1019 008f 00       		.byte	0
+ 1020 0090 03       		.uleb128 0x3
+ 1021 0091 08       		.uleb128 0x8
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 24
+
+
+ 1022 0092 3A       		.uleb128 0x3a
+ 1023 0093 0B       		.uleb128 0xb
+ 1024 0094 3B       		.uleb128 0x3b
+ 1025 0095 0B       		.uleb128 0xb
+ 1026 0096 49       		.uleb128 0x49
+ 1027 0097 13       		.uleb128 0x13
+ 1028 0098 02       		.uleb128 0x2
+ 1029 0099 18       		.uleb128 0x18
+ 1030 009a 00       		.byte	0
+ 1031 009b 00       		.byte	0
+ 1032 009c 0B       		.uleb128 0xb
+ 1033 009d 05       		.uleb128 0x5
+ 1034 009e 00       		.byte	0
+ 1035 009f 03       		.uleb128 0x3
+ 1036 00a0 0E       		.uleb128 0xe
+ 1037 00a1 3A       		.uleb128 0x3a
+ 1038 00a2 0B       		.uleb128 0xb
+ 1039 00a3 3B       		.uleb128 0x3b
+ 1040 00a4 0B       		.uleb128 0xb
+ 1041 00a5 49       		.uleb128 0x49
+ 1042 00a6 13       		.uleb128 0x13
+ 1043 00a7 02       		.uleb128 0x2
+ 1044 00a8 18       		.uleb128 0x18
+ 1045 00a9 00       		.byte	0
+ 1046 00aa 00       		.byte	0
+ 1047 00ab 0C       		.uleb128 0xc
+ 1048 00ac 0B       		.uleb128 0xb
+ 1049 00ad 01       		.byte	0x1
+ 1050 00ae 11       		.uleb128 0x11
+ 1051 00af 01       		.uleb128 0x1
+ 1052 00b0 12       		.uleb128 0x12
+ 1053 00b1 06       		.uleb128 0x6
+ 1054 00b2 00       		.byte	0
+ 1055 00b3 00       		.byte	0
+ 1056 00b4 0D       		.uleb128 0xd
+ 1057 00b5 34       		.uleb128 0x34
+ 1058 00b6 00       		.byte	0
+ 1059 00b7 03       		.uleb128 0x3
+ 1060 00b8 08       		.uleb128 0x8
+ 1061 00b9 3A       		.uleb128 0x3a
+ 1062 00ba 0B       		.uleb128 0xb
+ 1063 00bb 3B       		.uleb128 0x3b
+ 1064 00bc 0B       		.uleb128 0xb
+ 1065 00bd 49       		.uleb128 0x49
+ 1066 00be 13       		.uleb128 0x13
+ 1067 00bf 02       		.uleb128 0x2
+ 1068 00c0 18       		.uleb128 0x18
+ 1069 00c1 00       		.byte	0
+ 1070 00c2 00       		.byte	0
+ 1071 00c3 0E       		.uleb128 0xe
+ 1072 00c4 01       		.uleb128 0x1
+ 1073 00c5 01       		.byte	0x1
+ 1074 00c6 49       		.uleb128 0x49
+ 1075 00c7 13       		.uleb128 0x13
+ 1076 00c8 01       		.uleb128 0x1
+ 1077 00c9 13       		.uleb128 0x13
+ 1078 00ca 00       		.byte	0
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 25
+
+
+ 1079 00cb 00       		.byte	0
+ 1080 00cc 0F       		.uleb128 0xf
+ 1081 00cd 21       		.uleb128 0x21
+ 1082 00ce 00       		.byte	0
+ 1083 00cf 49       		.uleb128 0x49
+ 1084 00d0 13       		.uleb128 0x13
+ 1085 00d1 2F       		.uleb128 0x2f
+ 1086 00d2 0B       		.uleb128 0xb
+ 1087 00d3 00       		.byte	0
+ 1088 00d4 00       		.byte	0
+ 1089 00d5 10       		.uleb128 0x10
+ 1090 00d6 34       		.uleb128 0x34
+ 1091 00d7 00       		.byte	0
+ 1092 00d8 03       		.uleb128 0x3
+ 1093 00d9 0E       		.uleb128 0xe
+ 1094 00da 3A       		.uleb128 0x3a
+ 1095 00db 0B       		.uleb128 0xb
+ 1096 00dc 3B       		.uleb128 0x3b
+ 1097 00dd 05       		.uleb128 0x5
+ 1098 00de 49       		.uleb128 0x49
+ 1099 00df 13       		.uleb128 0x13
+ 1100 00e0 3F       		.uleb128 0x3f
+ 1101 00e1 19       		.uleb128 0x19
+ 1102 00e2 3C       		.uleb128 0x3c
+ 1103 00e3 19       		.uleb128 0x19
+ 1104 00e4 00       		.byte	0
+ 1105 00e5 00       		.byte	0
+ 1106 00e6 11       		.uleb128 0x11
+ 1107 00e7 34       		.uleb128 0x34
+ 1108 00e8 00       		.byte	0
+ 1109 00e9 03       		.uleb128 0x3
+ 1110 00ea 0E       		.uleb128 0xe
+ 1111 00eb 3A       		.uleb128 0x3a
+ 1112 00ec 0B       		.uleb128 0xb
+ 1113 00ed 3B       		.uleb128 0x3b
+ 1114 00ee 0B       		.uleb128 0xb
+ 1115 00ef 49       		.uleb128 0x49
+ 1116 00f0 13       		.uleb128 0x13
+ 1117 00f1 3F       		.uleb128 0x3f
+ 1118 00f2 19       		.uleb128 0x19
+ 1119 00f3 02       		.uleb128 0x2
+ 1120 00f4 18       		.uleb128 0x18
+ 1121 00f5 00       		.byte	0
+ 1122 00f6 00       		.byte	0
+ 1123 00f7 00       		.byte	0
+ 1124              		.section	.debug_aranges,"",%progbits
+ 1125 0000 44000000 		.4byte	0x44
+ 1126 0004 0200     		.2byte	0x2
+ 1127 0006 00000000 		.4byte	.Ldebug_info0
+ 1128 000a 04       		.byte	0x4
+ 1129 000b 00       		.byte	0
+ 1130 000c 0000     		.2byte	0
+ 1131 000e 0000     		.2byte	0
+ 1132 0010 00000000 		.4byte	.LFB63
+ 1133 0014 46000000 		.4byte	.LFE63-.LFB63
+ 1134 0018 00000000 		.4byte	.LFB64
+ 1135 001c 44000000 		.4byte	.LFE64-.LFB64
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 26
+
+
+ 1136 0020 00000000 		.4byte	.LFB65
+ 1137 0024 3A000000 		.4byte	.LFE65-.LFB65
+ 1138 0028 00000000 		.4byte	.LFB66
+ 1139 002c 36000000 		.4byte	.LFE66-.LFB66
+ 1140 0030 00000000 		.4byte	.LFB67
+ 1141 0034 3E000000 		.4byte	.LFE67-.LFB67
+ 1142 0038 00000000 		.4byte	.LFB69
+ 1143 003c 2C010000 		.4byte	.LFE69-.LFB69
+ 1144 0040 00000000 		.4byte	0
+ 1145 0044 00000000 		.4byte	0
+ 1146              		.section	.debug_ranges,"",%progbits
+ 1147              	.Ldebug_ranges0:
+ 1148 0000 00000000 		.4byte	.LFB63
+ 1149 0004 46000000 		.4byte	.LFE63
+ 1150 0008 00000000 		.4byte	.LFB64
+ 1151 000c 44000000 		.4byte	.LFE64
+ 1152 0010 00000000 		.4byte	.LFB65
+ 1153 0014 3A000000 		.4byte	.LFE65
+ 1154 0018 00000000 		.4byte	.LFB66
+ 1155 001c 36000000 		.4byte	.LFE66
+ 1156 0020 00000000 		.4byte	.LFB67
+ 1157 0024 3E000000 		.4byte	.LFE67
+ 1158 0028 00000000 		.4byte	.LFB69
+ 1159 002c 2C010000 		.4byte	.LFE69
+ 1160 0030 00000000 		.4byte	0
+ 1161 0034 00000000 		.4byte	0
+ 1162              		.section	.debug_line,"",%progbits
+ 1163              	.Ldebug_line0:
+ 1164 0000 35020000 		.section	.debug_str,"MS",%progbits,1
+ 1164      02005901 
+ 1164      00000201 
+ 1164      FB0E0D00 
+ 1164      01010101 
+ 1165              	.LASF36:
+ 1166 0000 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1166      43313120 
+ 1166      352E342E 
+ 1166      31203230 
+ 1166      31363036 
+ 1167 0033 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 1167      20726576 
+ 1167      6973696F 
+ 1167      6E203233 
+ 1167      37373135 
+ 1168 0066 30202D66 		.ascii	"0 -ffunction-sections -ffat-lto-objects\000"
+ 1168      66756E63 
+ 1168      74696F6E 
+ 1168      2D736563 
+ 1168      74696F6E 
+ 1169              	.LASF38:
+ 1170 008e 433A5C55 		.ascii	"C:\\UserData\\z004c8dn\\OneDrive - Siemens AG\\Doku"
+ 1170      73657244 
+ 1170      6174615C 
+ 1170      7A303034 
+ 1170      6338646E 
+ 1171 00bd 6D656E74 		.ascii	"mente\\PSoC Creator\\AndreasBothPSoC5OneWire\\Andre"
+ 1171      655C5053 
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 27
+
+
+ 1171      6F432043 
+ 1171      72656174 
+ 1171      6F725C41 
+ 1172 00ed 6173426F 		.ascii	"asBothPSoCOneWire.cydsn\000"
+ 1172      74685053 
+ 1172      6F434F6E 
+ 1172      65576972 
+ 1172      652E6379 
+ 1173              	.LASF9:
+ 1174 0105 5F5F696E 		.ascii	"__int32_t\000"
+ 1174      7433325F 
+ 1174      7400
+ 1175              	.LASF16:
+ 1176 010f 75696E74 		.ascii	"uint64\000"
+ 1176      363400
+ 1177              	.LASF3:
+ 1178 0116 73686F72 		.ascii	"short unsigned int\000"
+ 1178      7420756E 
+ 1178      7369676E 
+ 1178      65642069 
+ 1178      6E7400
+ 1179              	.LASF23:
+ 1180 0129 62797465 		.ascii	"byte\000"
+ 1180      00
+ 1181              	.LASF26:
+ 1182 012e 4F6E6557 		.ascii	"OneWireReadByte\000"
+ 1182      69726552 
+ 1182      65616442 
+ 1182      79746500 
+ 1183              	.LASF22:
+ 1184 013e 4F6E6557 		.ascii	"OneWireWriteByte\000"
+ 1184      69726557 
+ 1184      72697465 
+ 1184      42797465 
+ 1184      00
+ 1185              	.LASF20:
+ 1186 014f 4F6E6557 		.ascii	"OneWireReset\000"
+ 1186      69726552 
+ 1186      65736574 
+ 1186      00
+ 1187              	.LASF14:
+ 1188 015c 666C6F61 		.ascii	"float\000"
+ 1188      7400
+ 1189              	.LASF1:
+ 1190 0162 756E7369 		.ascii	"unsigned char\000"
+ 1190      676E6564 
+ 1190      20636861 
+ 1190      7200
+ 1191              	.LASF5:
+ 1192 0170 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1192      20756E73 
+ 1192      69676E65 
+ 1192      6420696E 
+ 1192      7400
+ 1193              	.LASF32:
+ 1194 0182 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 1194      52784275 
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 28
+
+
+ 1194      66666572 
+ 1194      00
+ 1195              	.LASF15:
+ 1196 018f 646F7562 		.ascii	"double\000"
+ 1196      6C6500
+ 1197              	.LASF33:
+ 1198 0196 67496E70 		.ascii	"gInputSum\000"
+ 1198      75745375 
+ 1198      6D00
+ 1199              	.LASF12:
+ 1200 01a0 75696E74 		.ascii	"uint16\000"
+ 1200      313600
+ 1201              	.LASF21:
+ 1202 01a7 4F6E6557 		.ascii	"OneWireWriteBit\000"
+ 1202      69726557 
+ 1202      72697465 
+ 1202      42697400 
+ 1203              	.LASF13:
+ 1204 01b7 75696E74 		.ascii	"uint32\000"
+ 1204      333200
+ 1205              	.LASF27:
+ 1206 01be 6D61696E 		.ascii	"main\000"
+ 1206      00
+ 1207              	.LASF8:
+ 1208 01c3 756E7369 		.ascii	"unsigned int\000"
+ 1208      676E6564 
+ 1208      20696E74 
+ 1208      00
+ 1209              	.LASF25:
+ 1210 01d0 4F6E6557 		.ascii	"OneWireReadBit\000"
+ 1210      69726552 
+ 1210      65616442 
+ 1210      697400
+ 1211              	.LASF7:
+ 1212 01df 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1212      206C6F6E 
+ 1212      6720756E 
+ 1212      7369676E 
+ 1212      65642069 
+ 1213              	.LASF35:
+ 1214 01f6 6753656E 		.ascii	"gSendAverage\000"
+ 1214      64417665 
+ 1214      72616765 
+ 1214      00
+ 1215              	.LASF24:
+ 1216 0203 72657375 		.ascii	"result\000"
+ 1216      6C7400
+ 1217              	.LASF10:
+ 1218 020a 696E7433 		.ascii	"int32_t\000"
+ 1218      325F7400 
+ 1219              	.LASF31:
+ 1220 0212 5472616E 		.ascii	"TransmitBuffer\000"
+ 1220      736D6974 
+ 1220      42756666 
+ 1220      657200
+ 1221              	.LASF19:
+ 1222 0221 73697A65 		.ascii	"sizetype\000"
+ARM GAS  C:\Users\z004c8dn\AppData\Local\Temp\ccYc7OeL.s 			page 29
+
+
+ 1222      74797065 
+ 1222      00
+ 1223              	.LASF6:
+ 1224 022a 6C6F6E67 		.ascii	"long long int\000"
+ 1224      206C6F6E 
+ 1224      6720696E 
+ 1224      7400
+ 1225              	.LASF37:
+ 1226 0238 6D61696E 		.ascii	"main.c\000"
+ 1226      2E6300
+ 1227              	.LASF17:
+ 1228 023f 63686172 		.ascii	"char\000"
+ 1228      00
+ 1229              	.LASF29:
+ 1230 0244 74656D70 		.ascii	"temperatureDecimalPart\000"
+ 1230      65726174 
+ 1230      75726544 
+ 1230      6563696D 
+ 1230      616C5061 
+ 1231              	.LASF34:
+ 1232 025b 67417665 		.ascii	"gAverageData\000"
+ 1232      72616765 
+ 1232      44617461 
+ 1232      00
+ 1233              	.LASF2:
+ 1234 0268 73686F72 		.ascii	"short int\000"
+ 1234      7420696E 
+ 1234      7400
+ 1235              	.LASF11:
+ 1236 0272 75696E74 		.ascii	"uint8\000"
+ 1236      3800
+ 1237              	.LASF4:
+ 1238 0278 6C6F6E67 		.ascii	"long int\000"
+ 1238      20696E74 
+ 1238      00
+ 1239              	.LASF18:
+ 1240 0281 6C6F6E67 		.ascii	"long double\000"
+ 1240      20646F75 
+ 1240      626C6500 
+ 1241              	.LASF28:
+ 1242 028d 74656D70 		.ascii	"temperatureIntPart\000"
+ 1242      65726174 
+ 1242      75726549 
+ 1242      6E745061 
+ 1242      727400
+ 1243              	.LASF0:
+ 1244 02a0 7369676E 		.ascii	"signed char\000"
+ 1244      65642063 
+ 1244      68617200 
+ 1245              	.LASF30:
+ 1246 02ac 6F6E6557 		.ascii	"oneWireResult\000"
+ 1246      69726552 
+ 1246      6573756C 
+ 1246      7400
+ 1247              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran
