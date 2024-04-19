@@ -1,6 +1,6 @@
 This README contains the relevant files I edited in this project, the files for the ADC conversion did not changev (you can find them in the Excercise 3). 
 This file contains the main.c the OneWire.h and OneWire.c
-´´´
+```
 /******************************************************************************
 * File Name: main.c
 *
@@ -318,4 +318,4 @@ uint8 OneWireReadByte()
 
 /* [] END OF FILE */
 
-´´´
+```
